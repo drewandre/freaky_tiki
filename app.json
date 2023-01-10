@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "freaky_tiki",
+    "slug": "freaky_tiki",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.goodkarmaclub.freaky_tiki"
+    },
+    "ios": {
+      "bundleIdentifier": "com.freaky-tiki"
+    }
+  }
+}
