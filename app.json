@@ -7,10 +7,10 @@
       "**/*"
     ],
     "android": {
-      "package": "com.goodkarmaclub.freaky_tiki"
+      "package": "com.freaky_tiki_dev"
     },
     "ios": {
-      "bundleIdentifier": "com.freaky-tiki"
+      "bundleIdentifier": "com.freaky-tiki-dev"
     }
   }
 }

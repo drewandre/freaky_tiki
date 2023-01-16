@@ -46,7 +46,7 @@ function SettingsScreen({
               style={{
                 marginRight: 15,
                 color: PlatformColor('systemBlueColor'),
-                fontSize: 16,
+                fontSize: 18,
               }}
             >
               Save
@@ -97,10 +97,10 @@ function SettingsScreen({
         <View style={styles.slidersWrapper}>{renderSliders()}</View>
         <View style={styles.textInputsContainer}>
           <Text style={styles.warningLabel}>
-            These settings do not need to be changed
+            These settings should not need to be changed
           </Text>
           <View style={styles.textInputContainer}>
-            <Text style={styles.label}>TouchOSC IP Address</Text>
+            <Text style={styles.label}>IP Address</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -113,14 +113,15 @@ function SettingsScreen({
             />
           </View>
           <View style={styles.textInputContainer}>
-            <Text style={styles.label}>TouchOSC Input Port</Text>
+            <Text style={styles.label}>Port</Text>
             <TextInput
               returnKeyType="done"
               placeholder="8010"
               defaultValue={port}
+              editable={false}
               onSubmitEditing={Keyboard.dismiss}
               onChangeText={onChangePortText}
-              style={styles.textInput}
+              style={[styles.textInput, styles.disabledTextInput]}
             />
           </View>
         </View>
@@ -166,6 +167,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     width: '100%',
     fontSize: 16,
+  },
+  disabledTextInput: {
+    opacity: 0.3,
   },
   textInputContainer: {
     marginBottom: 15,

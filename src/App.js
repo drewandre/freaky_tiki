@@ -19,6 +19,7 @@ import {
 } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { BlurView } from 'expo-blur'
+import * as SplashScreen from 'expo-splash-screen'
 import DeviceInfo from 'react-native-device-info'
 import RNRestart from 'react-native-restart'
 import { connect } from 'react-redux'
@@ -39,11 +40,11 @@ const Footer = createBottomTabNavigator()
 const isTablet = DeviceInfo.isTablet()
 
 const reasons = [
-  'Make sure this iPad is connected to the normal WiFi network. If the WiFi network has recently changed, see step 4.',
-  'Make sure the Mac Mini (located in the rack unit) is turned on. There should be a glowing white light on the front of the unit. If not, the power button is located on the back left of the unit.',
-  'If the Mac Mini is turned on, try power cycling the computer. You can do this by holding down the power button (located back left of the unit) for several seconds until the front light turns off, and then pressing the button again. You should hear the startup chime.',
-  "If you believe it's possible the WiFi network has recently changed, you will need to update this on the Mac Mini. To do so, you need to plug a monitor into the computer's HDMI port, and the keyboard/mouse (located in the rack unit). The password for the computer (is prompted) is tiki.",
-  "It's possible the IP address and input port are incorrect on the settings screen. This will require developer or IT support. The input port should always be 8010, but the IP adress can change.",
+  'Make sure this iPad is connected to the normal WiFi network (should be called Tiki_guest). If the WiFi network has recently changed, see step 4.',
+  'Make sure the Mac Mini (located in the rack unit) is turned on. There should be a glowing white light on the front of the unit. If not, the black-colored power button is located on the front left of the unit.',
+  'If the Mac Mini is turned on, try power cycling entire system using the large on/off switch located on the bottom right of the rack unit. Wait 10 seconds before turning the system back on, after which you should hear the startup chime.',
+  "If you believe it's possible the WiFi network has recently changed, you will need to update this on the Mac Mini. To do so, you need to plug a monitor into the computer's HDMI port, and the keyboard/mouse (located in the rack unit). Correct the WiFi setting, then take note of the new IP address which can be found by holding the window key (or option on a mac keyboard) and clicking the WiFi sybol in the mac menu bar. Within that dropdown you will see IP Address. You should then click 'Settings' below, and make sure the IP Address matches.",
+  'If all else fails, call Drew André using the cell number above.',
 ]
 
 function App({
@@ -67,6 +68,15 @@ function App({
         OSCManager.sendMessage(currentPalette.FULL_PATH, [])
       }
     })
+    // Hides native splash screen after 500ms
+    const timeout = setTimeout(async () => {
+      SplashScreen.hideAsync().catch((error) => {
+        console.warn('Unable to hide splash screen', error)
+      })
+    }, 500)
+    return function cleanup() {
+      clearTimeout(timeout)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const navigateToSettings = React.useCallback(() => {
@@ -103,7 +113,19 @@ function App({
       tabBarLabelStyle: {
         color: '#fff',
       },
-      headerTitle: 'Freaky Tiki',
+      headerTitle: () => {
+        return (
+          <Image
+            source={require('./assets/logo_horizontal.png')}
+            style={{
+              width: 115,
+              height: 50,
+              resizeMode: 'contain',
+              tintColor: '#fff',
+            }}
+          />
+        )
+      },
       headerLeft: () => {
         if (isTablet) {
           return null
@@ -430,6 +452,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     color: '#fff',
     fontSize: 16,
+    marginBottom: 15,
   },
 })
 

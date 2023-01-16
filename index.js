@@ -3,6 +3,7 @@ import React from 'react'
 import 'react-native-gesture-handler'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { registerRootComponent } from 'expo'
+import * as SplashScreen from 'expo-splash-screen'
 import { Provider } from 'react-redux'
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 import { createTransform } from 'redux-persist'
@@ -13,6 +14,14 @@ import thunk from 'redux-thunk'
 
 import App from './src/App'
 import settings from './src/features/settings/redux/settingsReducer'
+
+SplashScreen.preventAutoHideAsync()
+  .then((result) => {
+    return console.log(
+      `SplashScreen.preventAutoHideAsync() succeeded: ${result}`
+    )
+  })
+  .catch(console.warn)
 
 const rootReducer = combineReducers({
   settings,
