@@ -8,7 +8,6 @@ IOS_BUILD_OUTPUT_DIRECTORY = './ios_build'
 IOS_ARCHIVE_OUTPUT_DIRECTORY = './ios_build/ios_archive'
 ANDROID_BUILD_OUTPUT_DIRECTORY = '../android_build'
 PLIST_PATH = 'freakytiki/Info.plist'
-RICH_PUSH_PLIST_PATH = 'rich_push/Info.plist'
 
 PODFILE_PATH = 'ios/Podfile'
 ENTITLEMENTS_PATH = 'freakytiki/freakytiki.entitlements'
@@ -26,11 +25,10 @@ IOS_APP_ICON_GLOB_PATH = '/ios/freakytiki/Images.xcassets/AppIcon.appiconset/*.{
 IOS_APP_ICON_SET_PATH = 'ios/freakytiki/Images.xcassets'
 APPSTORE_CONNECT_API_KEY_PATH = 'fastlane/AuthKey_8D33ZHR76G.p8'
 PRIMARY_TARGET = 'freakytiki'
-RICH_PUSH_TARGET = 'rich_push'
 
 BUILD_NUMBER_INCREMENT = 1
 
-FORCE_MATCH = true
+FORCE_MATCH = false
 
 # Google::Apis.logger.level = Logger::DEBUG
 # ENV["VERBOSE"] = "true"
@@ -288,9 +286,6 @@ platform :ios do
       workspace: XCODEWORKSPACE,
       export_method: "app-store",  
       clean: true,
-      silent: true,
-      include_symbols: true,
-      include_bitcode: true,
       build_path: IOS_BUILD_OUTPUT_DIRECTORY,
       # derived_data_path: IOS_BUILD_OUTPUT_DIRECTORY,
       # archive_path: IOS_ARCHIVE_OUTPUT_DIRECTORY,

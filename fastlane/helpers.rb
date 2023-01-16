@@ -15,13 +15,13 @@ end
 def returniOSSchemeForTargetEnv(target)
   case target
     when 'dev2'
-      return 'freakytiki'
+      return 'freakytiki_release'
     when 'dev'
-      return 'freakytiki'
+      return 'freakytiki_release'
     when 'staging'
-      return 'freakytiki'
+      return 'freakytiki_release'
     when 'prod'
-      return 'freakytiki'
+      return 'freakytiki_release'
     else UI.abort_with_message!('Unknown target supplied to returniOSSchemeForTargetEnv')
   end
 end
