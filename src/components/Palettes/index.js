@@ -46,6 +46,10 @@ function Palettes({ palettes }) {
     }
   }, [])
 
+  function handleEditPalette(palette) {
+    navigation.navigate('ColorPaletteScreen', { palette })
+  }
+
   function screenListener({ orientationInfo }) {
     // console.log("orientation", orientationInfo.orientation);
     setOrientation(orientationInfo.orientation)
@@ -54,7 +58,7 @@ function Palettes({ palettes }) {
     if (!isLandscape && index === palettes.length - 1) {
       return null
     }
-    return <Palette data={item} />
+    return <Palette data={item} editPalette={handleEditPalette} />
   }
   function paletteKeyExtractor(item, index) {
     return `palette_${item?.id || 'empty'}_${index}`

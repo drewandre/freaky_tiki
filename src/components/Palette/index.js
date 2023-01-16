@@ -16,6 +16,9 @@ import { connect } from 'react-redux'
 import { adjustColor } from '../../features/settings/helpers/adjustColor'
 import { setCurrentPalette } from '../../features/settings/redux/settingsActions'
 
+const doubleTap = React.createRef()
+const editingRef = React.createRef()
+
 function hex2Rgb(hex) {
   let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   return result
@@ -27,18 +30,24 @@ function hex2Rgb(hex) {
     : null
 }
 
-function Palette({ medias = {}, setCurrentPalette, currentPalette, data }) {
+function Palette({
+  medias = {},
+  setCurrentPalette,
+  currentPalette,
+  data,
+  editPalette,
+}) {
   function handlePress() {
     setCurrentPalette(data)
     for (var media in medias) {
       if (medias[media]?.CONTENTS) {
         const backRgb = hex2Rgb(data.back.hex)
         const frontRgb = hex2Rgb(data.front.hex)
-        adjustColor(medias, 'Back_Color', media, {
+        adjustColor(medias, 'Back_Color', false, media, {
           ...backRgb,
           a: data.back.alpha,
         })
-        adjustColor(medias, 'Front_Color', media, {
+        adjustColor(medias, 'Front_Color', false, media, {
           ...frontRgb,
           a: data.front.alpha,
         })
@@ -68,12 +77,12 @@ function Palette({ medias = {}, setCurrentPalette, currentPalette, data }) {
   const cueTimingProgress = useSharedValue(0)
 
   React.useEffect(() => {
-    if (currentPalette?.id === data?.id) {
+    if (currentPalette && currentPalette?.id === data?.id) {
       if (!isSelected.value) {
         cueTimingProgress.value = withTiming(
           100,
           {
-            duration: 2000,
+            duration: 1000,
             easing: Easing.linear,
           },
           () => {
@@ -153,8 +162,15 @@ function Palette({ medias = {}, setCurrentPalette, currentPalette, data }) {
       backgroundColor: 'rgba(255,255,255,0.5)',
     }
   })
+
+  function handleEditPalette() {
+    editPalette(data)
+  }
+
   return (
     <TapGestureHandler
+      ref={doubleTap}
+      waitFor={editingRef}
       enabled={!!data?.id}
       onBegan={onTapBegin}
       onActivated={onTapActive}
@@ -178,6 +194,29 @@ function Palette({ medias = {}, setCurrentPalette, currentPalette, data }) {
         />
         <Animated.View style={animatedCueTimingStyles} />
         {data?.id ? <Animated.View style={animatedBottomBorderStyles} /> : null}
+        {data?.id ? (
+          <TapGestureHandler ref={editingRef} onActivated={handleEditPalette}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                zIndex: 8,
+                width: 30,
+                height: 30,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255,255,255,0.5)',
+                borderRadius: 100,
+              }}
+            >
+              <Image
+                source={require('../../assets/edit.png')}
+                style={{ width: 18, height: 18 }}
+              />
+            </View>
+          </TapGestureHandler>
+        ) : null}
       </Animated.View>
     </TapGestureHandler>
   )

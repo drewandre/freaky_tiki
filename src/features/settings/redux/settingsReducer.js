@@ -42,7 +42,7 @@ export default produce((draft, action) => {
       draft.palettes.push(action.payload)
       return draft
     case EDIT_COLOR_PALETTE:
-      const paletteIndex = draft.palettes.find((palette) => {
+      const paletteIndex = draft.palettes.findIndex((palette) => {
         return palette.id === action.payload.id
       })
       if (paletteIndex === -1) {

@@ -40,7 +40,7 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
   const cueTimingProgress = useSharedValue(0)
 
   React.useEffect(() => {
-    if (currentAnimation?.FULL_PATH === data.FULL_PATH) {
+    if (currentAnimation && currentAnimation?.FULL_PATH === data.FULL_PATH) {
       if (!isSelected.value) {
         cueTimingProgress.value = withTiming(
           100,
@@ -125,6 +125,32 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
     }
   })
 
+  const thumbnail = React.useMemo(() => {
+    const id = data?.FULL_PATH?.toLowerCase?.() || ''
+    if (id.includes('sparkle')) {
+      return (
+        <Image
+          source={require('../../assets/sparkle_thumbnail.png')}
+          style={styles.imageBackground}
+        />
+      )
+    } else if (id.includes('noise')) {
+      return (
+        <Image
+          source={require('../../assets/noise_thumbnail.png')}
+          style={styles.imageBackground}
+        />
+      )
+    } else {
+      return (
+        <Image
+          source={require('../../assets/unknown_thumbnail.png')}
+          style={styles.imageBackground}
+        />
+      )
+    }
+  }, [data?.FULL_PATH])
+
   return (
     <TapGestureHandler
       enabled={!!data?.FULL_PATH}
@@ -134,14 +160,7 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
       onCancelled={onTapCancelled}
     >
       <Animated.View style={animatedStyles}>
-        {data?.FULL_PATH ? (
-          <Image
-            source={require('../../assets/thumbnail.png')}
-            style={styles.imageBackground}
-          />
-        ) : (
-          <View style={styles.imageBackground} />
-        )}
+        {data?.FULL_PATH ? thumbnail : <View style={styles.imageBackground} />}
         <Text style={styles.text}>{data.DESCRIPTION}</Text>
         <Animated.View style={animatedCueTimingStyles} />
         {data?.FULL_PATH ? (

@@ -322,7 +322,12 @@ function App({
               }}
             </RootStack.Screen>
           )}
-          <RootStack.Group screenOptions={{ presentation: 'modal' }}>
+          <RootStack.Group
+            screenOptions={{
+              presentation: 'fullScreenModal',
+              gestureEnabled: false,
+            }}
+          >
             <RootStack.Screen
               name="Settings"
               component={SettingsScreen}
@@ -351,23 +356,8 @@ function App({
             <RootStack.Screen
               name="ColorPaletteScreen"
               component={ColorPaletteScreen}
-              options={({ navigation, route }) => {
+              options={({ route }) => {
                 return {
-                  headerLeft: () => {
-                    return (
-                      <TouchableOpacity onPress={navigation.goBack}>
-                        <Image
-                          source={require('./assets/down_arrow.png')}
-                          style={{
-                            width: 30,
-                            height: 30,
-                            marginLeft: 15,
-                            tintColor: PlatformColor('systemBlueColor'),
-                          }}
-                        />
-                      </TouchableOpacity>
-                    )
-                  },
                   headerBackTitleVisible: false,
                   headerTitle: route?.params?.palette
                     ? 'Edit Color Palette'

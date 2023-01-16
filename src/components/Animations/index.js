@@ -10,9 +10,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { connect } from 'react-redux'
 
 import OSCManager from '../../features/OSC/OSCManager'
-import { setParamValue } from '../../features/settings/redux/settingsActions'
+import {
+  setCurrentAnimation,
+  setParamValue,
+} from '../../features/settings/redux/settingsActions'
 import Cue from '../Cue'
 import Slider from '../Slider'
+
+const SHOW_PLAY_OPTIONS = false
 
 const isTablet = DeviceInfo.isTablet()
 
@@ -25,7 +30,12 @@ const DEFAULT_HIT_SLOP = {
   right: 5,
 }
 
-function Animations({ cues, currentAnimation, setParamValue }) {
+function Animations({
+  cues,
+  currentAnimation,
+  setParamValue,
+  setCurrentAnimation,
+}) {
   const [orientation, setOrientation] = React.useState(0)
   const isLandscape = [1, 2].includes(orientation)
   React.useEffect(() => {
@@ -60,13 +70,32 @@ function Animations({ cues, currentAnimation, setParamValue }) {
     return `animation_${item?.id || 'empty'}_${index}`
   }
   function skipToStart() {
-    console.log('skip to start')
+    console.log('Skipping to start')
+    OSCManager.sendMessage('/cues/main/cues/start_previous', [])
+    if (cues?.[0]) {
+      setCurrentAnimation(cues[0])
+    }
   }
   function skipToEnd() {
-    console.log('skip to end')
+    const indexToSkipTo = cues?.findIndex?.((cue) => {
+      return cue?.FULL_PATH === currentAnimation?.FULL_PATH
+    })
+    console.log(
+      'Skipping to end',
+      indexToSkipTo + 1,
+      !!cues?.[indexToSkipTo + 1]?.FULL_PATH
+    )
+    if (indexToSkipTo !== -1 && cues?.[indexToSkipTo + 1]?.FULL_PATH) {
+      OSCManager.sendMessage('/cues/main/cues/start_next', [])
+      setCurrentAnimation(cues[indexToSkipTo + 1])
+    }
   }
   function play() {
-    console.log('play')
+    console.log('Auto play initiated')
+    OSCManager.sendMessage('/cues/selected/auto_play', [])
+    if (cues?.[0]) {
+      setCurrentAnimation(cues[0])
+    }
   }
   function onParamSliderChange(e, address, oscAddress) {
     OSCManager.sendMessage(oscAddress, [e])
@@ -89,26 +118,31 @@ function Animations({ cues, currentAnimation, setParamValue }) {
       <View style={{ ...styles.innerContainer, flex: 1.5 }}>
         <View style={styles.sectionHeaderContainer}>
           <Text style={styles.sectionHeader}>Animations</Text>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity hitSlop={DEFAULT_HIT_SLOP} onPress={skipToStart}>
-              <Image
-                source={require('../../assets/skip_to_start.png')}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity hitSlop={DEFAULT_HIT_SLOP} onPress={skipToEnd}>
-              <Image
-                source={require('../../assets/skip_to_next.png')}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity hitSlop={DEFAULT_HIT_SLOP} onPress={play}>
-              <Image
-                source={require('../../assets/play.png')}
-                style={styles.playIcon}
-              />
-            </TouchableOpacity>
-          </View>
+          {SHOW_PLAY_OPTIONS ? (
+            <View style={styles.iconContainer}>
+              <TouchableOpacity
+                hitSlop={DEFAULT_HIT_SLOP}
+                onPress={skipToStart}
+              >
+                <Image
+                  source={require('../../assets/skip_to_start.png')}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity hitSlop={DEFAULT_HIT_SLOP} onPress={skipToEnd}>
+                <Image
+                  source={require('../../assets/skip_to_next.png')}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity hitSlop={DEFAULT_HIT_SLOP} onPress={play}>
+                <Image
+                  source={require('../../assets/play.png')}
+                  style={styles.playIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </View>
         <FlatList
           numColumns={isTablet ? 4 : 2}
@@ -223,6 +257,7 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = {
   setParamValue,
+  setCurrentAnimation,
 }
 
 function mapStateToProps({ settings: { port, currentAnimation, cues } }) {

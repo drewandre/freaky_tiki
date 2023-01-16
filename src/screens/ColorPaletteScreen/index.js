@@ -3,6 +3,7 @@ import {
   Text,
   View,
   StyleSheet,
+  PlatformColor,
   Button,
   Image,
   TouchableOpacity,
@@ -94,33 +95,84 @@ function ColorPaletteScreen({
     return updateState({})
   }, [])
 
+  const initialPalette = route?.params?.palette
+
   const pickerRef = React.useRef(null)
   const [frontColorSelectedState, setFrontColorSelectedState] =
     React.useState(true)
   const frontColorSelected = useSharedValue(1)
-  const frontColor = useSharedValue(currentPalette?.front?.hex || '#503482')
-  const backColor = useSharedValue(currentPalette?.back?.hex || '#FB9702')
-  const frontColorAlpha = useSharedValue(currentPalette?.front?.alpha || 1)
-  const backColorAlpha = useSharedValue(currentPalette?.back?.alpha || 1)
+  const frontColor = useSharedValue(
+    initialPalette?.front?.hex || currentPalette?.front?.hex || '#503482'
+  )
+  const backColor = useSharedValue(
+    initialPalette?.back?.hex || currentPalette?.back?.hex || '#FB9702'
+  )
+  const frontColorAlpha = useSharedValue(
+    initialPalette?.front?.alpha || currentPalette?.front?.alpha || 1
+  )
+  const backColorAlpha = useSharedValue(
+    initialPalette?.front?.alpha || currentPalette?.back?.alpha || 1
+  )
+
+  const handleBack = React.useCallback(() => {
+    if (currentPalette) {
+      console.log(currentPalette)
+      for (var media in medias) {
+        if (medias[media]?.CONTENTS) {
+          const backRgb = hex2Rgb(currentPalette.back.hex)
+          const frontRgb = hex2Rgb(currentPalette.front.hex)
+          adjustColor(medias, 'Back_Color', false, media, {
+            ...backRgb,
+            a: currentPalette.back.alpha,
+          })
+          adjustColor(medias, 'Front_Color', false, media, {
+            ...frontRgb,
+            a: currentPalette.front.alpha,
+          })
+        } else {
+          console.log(`${media} media did not have any CONTENTS`)
+        }
+      }
+    } else {
+      console.log('No currentPalette')
+    }
+    navigation.goBack()
+  }, [currentPalette, navigation, medias])
 
   React.useEffect(() => {
     navigation.setOptions({
+      headerLeft: () => {
+        return (
+          <TouchableOpacity onPress={handleBack}>
+            <Image
+              source={require('../../assets/down_arrow.png')}
+              style={{
+                width: 30,
+                height: 30,
+                marginLeft: 15,
+                tintColor: PlatformColor('systemBlueColor'),
+              }}
+            />
+          </TouchableOpacity>
+        )
+      },
       headerRight: () => {
         return (
           <Button
-            title={route?.palette ? 'Save' : 'Add'}
+            title={route?.params?.palette ? 'Save' : 'Add'}
             onPress={handleSave}
             style={styles.button}
           />
         )
       },
     })
-  }, [handleSave, navigation, route?.palette])
+  }, [handleBack, handleSave, navigation, route?.params?.palette])
 
   const handleSave = React.useCallback(() => {
-    if (route?.palette) {
+    if (route?.params?.palette) {
+      console.log('Editing color palette', route.params.palette.id)
       editColorPalette({
-        id: route.palette.id,
+        id: route.params.palette.id,
         front: {
           hex: frontColor.value,
           alpha: frontColorAlpha.value,
@@ -154,7 +206,7 @@ function ColorPaletteScreen({
     frontColor.value,
     frontColorAlpha.value,
     navigation,
-    route.palette,
+    route?.params?.palette,
   ])
 
   function setPickerRef(ref) {
@@ -176,7 +228,7 @@ function ColorPaletteScreen({
     for (var media in medias) {
       if (medias[media]?.CONTENTS) {
         const { r, g, b } = hex2Rgb(frontColor.value)
-        adjustColor(medias, 'Front_Color', media, {
+        adjustColor(medias, 'Front_Color', true, media, {
           r,
           g,
           b,
@@ -193,7 +245,7 @@ function ColorPaletteScreen({
     for (var media in medias) {
       if (medias[media]?.CONTENTS) {
         const { r, g, b } = hex2Rgb(backColor.value)
-        adjustColor(medias, 'Back_Color', media, {
+        adjustColor(medias, 'Back_Color', true, media, {
           r,
           g,
           b,
@@ -250,7 +302,7 @@ function ColorPaletteScreen({
     for (var media in medias) {
       if (medias[media]?.CONTENTS) {
         const { r, g, b } = hex2Rgb(frontColor.value)
-        adjustColor(medias, 'Front_Color', media, { r, g, b, a })
+        adjustColor(medias, 'Front_Color', true, media, { r, g, b, a })
       } else {
         console.log(`${media} media did not have any CONTENTS`)
       }
@@ -262,7 +314,7 @@ function ColorPaletteScreen({
     for (var media in medias) {
       if (medias[media]?.CONTENTS) {
         const { r, g, b } = hex2Rgb(backColor.value)
-        adjustColor(medias, 'Back_Color', media, { r, g, b, a })
+        adjustColor(medias, 'Back_Color', true, media, { r, g, b, a })
       } else {
         console.log(`${media} media did not have any CONTENTS`)
       }

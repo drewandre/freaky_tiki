@@ -15,6 +15,7 @@ const disallowedMedias = [
   'FaceTime_HD_Camera_(Built-in)',
   'TestCard',
   'Video-Output-1',
+  'main_output',
   'next',
   'per_type_selection',
   'previous',
