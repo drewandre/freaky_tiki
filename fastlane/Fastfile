@@ -317,27 +317,16 @@ platform :ios do
     # https://docs.fastlane.tools/actions/get_build_number/
     get_build_number(xcodeproj: XCODEPROJ)
 
-    groups = []
-    version_array = "#{lane_context[SharedValues::VERSION_NUMBER]}".split('.')
-    file_path = "./internal_release_notes/#{version_array[0]}_#{version_array[1]}_#{version_array[2]}.txt"
-    if !File.file?(file_path)
-      UI.user_error!("You must supply internal release notes in the fastlane/internal_release_notes folder for production releases. For version 1.0.0, the filename would be 1_0_0.txt.")
-    end
-    file = File.open(file_path)
-    changelog = file.read
-    file.close
-
+    groups = ["External"]
     # https://docs.fastlane.tools/actions/upload_to_testflight/
     upload_to_testflight(
       reject_build_waiting_for_review: true,
       skip_waiting_for_build_processing: options[:target] != 'prod',
       distribute_external: options[:target] == 'prod',
-      changelog: options[:target] == 'prod' ? changelog : nil,
-      groups: options[:target] == 'prod' ? groups : nil,
+      changelog: "Updated Freaky Tiki build",
+      groups: groups,
       ipa: "#{IOS_BUILD_OUTPUT_DIRECTORY}/#{returniOSOutputNameForTargetEnv(options[:target], 'Release')}.ipa"
     )
-
-    UI.success(message)
   end
 
   lane :refresh_dsyms do |options|
