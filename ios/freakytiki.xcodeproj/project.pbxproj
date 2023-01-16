@@ -349,7 +349,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "7219f80a-df64-405e-b06d-8288c7971116";
+				PROVISIONING_PROFILE = "c1a4c5fc-8e16-46a6-be03-526ee962b7f2";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiDevelopment;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -388,7 +388,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "61e1f793-ab80-4785-a20d-841431a2a363";
+				PROVISIONING_PROFILE = "403ba228-18fe-4f02-b167-87ca3e2c2827";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiRelease;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiRelease;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
