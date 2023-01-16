@@ -1,6 +1,5 @@
-const React = require("react"),
-  { Component } = React;
-
+const React = require('react'),
+  { Component } = React
 const {
   Animated,
   Image,
@@ -9,176 +8,204 @@ const {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-} = require("react-native");
+} = require('react-native')
 
-const { LinearGradient } = require("expo-linear-gradient");
+const { LinearGradient } = require('expo-linear-gradient')
 
-const srcWheel = require("../../assets/color-wheel.png");
-const srcSlider = require("../../assets/black-gradient.png");
-const srcSliderRotated = require("../../assets/black-gradient-rotated.png");
-const alphaImage = require("../../assets/alpha.jpg");
+const alphaImage = require('../../assets/alpha.jpg')
+const srcWheel = require('../../assets/color-wheel.png')
+// const srcSlider = require("../../assets/black-gradient.png");
+// const srcSliderRotated = require("../../assets/black-gradient-rotated.png");
 // const srcAlphaSliderRotated = require("../../assets/alpha-gradient-rotated.png");
 // const srcAlphaSlider = require("../../assets/alpha-gradient-rotated.png");
 
 const PALETTE = [
-  "#000000",
-  "#888888",
-  "#ed1c24",
-  "#d11cd5",
-  "#1633e6",
-  "#00aeef",
-  "#00c85d",
-  "#57ff0a",
-  "#ffde17",
-  "#f26522",
-];
+  '#000000',
+  '#888888',
+  '#ed1c24',
+  '#d11cd5',
+  '#1633e6',
+  '#00aeef',
+  '#00c85d',
+  '#57ff0a',
+  '#ffde17',
+  '#f26522',
+]
 
-const RGB_MAX = 255;
-const HUE_MAX = 360;
-const SV_MAX = 100;
+const RGB_MAX = 255
+const HUE_MAX = 360
+const SV_MAX = 100
 
-const normalize = (degrees) => ((degrees % 360) + 360) % 360;
+const normalize = (degrees) => {
+  return ((degrees % 360) + 360) % 360
+}
 
 const rgb2Hsv = (r, g, b) => {
-  if (typeof r === "object") {
-    const args = r;
-    r = args.r;
-    g = args.g;
-    b = args.b;
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r
+    g = args.g
+    b = args.b
   }
 
   // It converts [0,255] format, to [0,1]
-  r = r === RGB_MAX ? 1 : (r % RGB_MAX) / parseFloat(RGB_MAX);
-  g = g === RGB_MAX ? 1 : (g % RGB_MAX) / parseFloat(RGB_MAX);
-  b = b === RGB_MAX ? 1 : (b % RGB_MAX) / parseFloat(RGB_MAX);
+  r = r === RGB_MAX ? 1 : (r % RGB_MAX) / parseFloat(RGB_MAX)
+  g = g === RGB_MAX ? 1 : (g % RGB_MAX) / parseFloat(RGB_MAX)
+  b = b === RGB_MAX ? 1 : (b % RGB_MAX) / parseFloat(RGB_MAX)
 
-  let max = Math.max(r, g, b);
-  let min = Math.min(r, g, b);
+  let max = Math.max(r, g, b)
+  let min = Math.min(r, g, b)
   let h,
     s,
-    v = max;
+    v = max
 
-  let d = max - min;
+  let d = max - min
 
-  s = max === 0 ? 0 : d / max;
+  s = max === 0 ? 0 : d / max
 
   if (max === min) {
-    h = 0; // achromatic
+    h = 0 // achromatic
   } else {
     switch (max) {
       case r:
-        h = (g - b) / d + (g < b ? 6 : 0);
-        break;
+        h = (g - b) / d + (g < b ? 6 : 0)
+        break
       case g:
-        h = (b - r) / d + 2;
-        break;
+        h = (b - r) / d + 2
+        break
       case b:
-        h = (r - g) / d + 4;
-        break;
+        h = (r - g) / d + 4
+        break
     }
-    h /= 6;
+    h /= 6
   }
 
   return {
     h: Math.round(h * HUE_MAX),
     s: Math.round(s * SV_MAX),
     v: Math.round(v * SV_MAX),
-  };
-};
+  }
+}
 
 const hsv2Rgb = (h, s, v) => {
-  if (typeof h === "object") {
-    const args = h;
-    h = args.h;
-    s = args.s;
-    v = args.v;
+  if (typeof h === 'object') {
+    const args = h
+    h = args.h
+    s = args.s
+    v = args.v
   }
 
-  h = normalize(h);
-  h = h === HUE_MAX ? 1 : ((h % HUE_MAX) / parseFloat(HUE_MAX)) * 6;
-  s = s === SV_MAX ? 1 : (s % SV_MAX) / parseFloat(SV_MAX);
-  v = v === SV_MAX ? 1 : (v % SV_MAX) / parseFloat(SV_MAX);
+  h = normalize(h)
+  h = h === HUE_MAX ? 1 : ((h % HUE_MAX) / parseFloat(HUE_MAX)) * 6
+  s = s === SV_MAX ? 1 : (s % SV_MAX) / parseFloat(SV_MAX)
+  v = v === SV_MAX ? 1 : (v % SV_MAX) / parseFloat(SV_MAX)
 
-  let i = Math.floor(h);
-  let f = h - i;
-  let p = v * (1 - s);
-  let q = v * (1 - f * s);
-  let t = v * (1 - (1 - f) * s);
-  let mod = i % 6;
-  let r = [v, q, p, p, t, v][mod];
-  let g = [t, v, v, q, p, p][mod];
-  let b = [p, p, t, v, v, q][mod];
+  let i = Math.floor(h)
+  let f = h - i
+  let p = v * (1 - s)
+  let q = v * (1 - f * s)
+  let t = v * (1 - (1 - f) * s)
+  let mod = i % 6
+  let r = [v, q, p, p, t, v][mod]
+  let g = [t, v, v, q, p, p][mod]
+  let b = [p, p, t, v, v, q][mod]
 
   return {
     r: Math.floor(r * RGB_MAX),
     g: Math.floor(g * RGB_MAX),
     b: Math.floor(b * RGB_MAX),
-  };
-};
+  }
+}
 
 const rgb2Hex = (r, g, b) => {
-  if (typeof r === "object") {
-    const args = r;
-    r = args.r;
-    g = args.g;
-    b = args.b;
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r
+    g = args.g
+    b = args.b
   }
-  r = Math.round(r).toString(16);
-  g = Math.round(g).toString(16);
-  b = Math.round(b).toString(16);
+  r = Math.round(r).toString(16)
+  g = Math.round(g).toString(16)
+  b = Math.round(b).toString(16)
 
-  r = r.length === 1 ? "0" + r : r;
-  g = g.length === 1 ? "0" + g : g;
-  b = b.length === 1 ? "0" + b : b;
+  r = r.length === 1 ? '0' + r : r
+  g = g.length === 1 ? '0' + g : g
+  b = b.length === 1 ? '0' + b : b
 
-  return "#" + r + g + b;
-};
+  return '#' + r + g + b
+}
 
 const hex2Rgb = (hex) => {
-  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   return result
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16),
       }
-    : null;
-};
+    : null
+}
 
 const hsv2Hex = (h, s, v) => {
-  let rgb = hsv2Rgb(h, s, v);
-  return rgb2Hex(rgb.r, rgb.g, rgb.b);
-};
+  let rgb = hsv2Rgb(h, s, v)
+  return rgb2Hex(rgb.r, rgb.g, rgb.b)
+}
 
 const hex2Hsv = (hex) => {
-  console.log("hex input", hex);
-  let rgb = hex2Rgb(hex);
-  return rgb2Hsv(rgb.r, rgb.g, rgb.b);
-};
+  let rgb = hex2Rgb(hex)
+  return rgb2Hsv(rgb.r, rgb.g, rgb.b)
+}
 
 // expands hex to full 6 chars (#fff -> #ffffff) if necessary
-const expandColor = (color) =>
-  typeof color == "string" && color.length === 4
+const expandColor = (color) => {
+  return typeof color === 'string' && color.length === 4
     ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
-    : color;
+    : color
+}
 
 module.exports = class ColorPicker extends Component {
   // testData = {}
   // testView = {forceUpdate(){}}
-  color = { h: 0, s: 0, v: 100, a: 1 };
-  slideX = new Animated.Value(0);
-  slideY = new Animated.Value(0);
-  alphaSlideX = new Animated.Value(0);
-  alphaSlideY = new Animated.Value(0);
-  panX = new Animated.Value(30);
-  panY = new Animated.Value(30);
-  sliderLength = 0;
-  alphaSliderLength = 0;
-  wheelSize = 0;
-  alphaSliderMeasure = {};
-  sliderMeasure = {};
-  wheelMeasure = {};
-  wheelWidth = 0;
+  color = { h: 0, s: 0, v: 100, a: 1 }
+
+  alpha = 1
+
+  animatedSliderSize = new Animated.Value(this.props.sliderSize / 2)
+
+  slideX = new Animated.Value(0)
+
+  slideY = new Animated.Value(0)
+
+  saturationSlideX = new Animated.Value(0)
+
+  saturationSlideY = new Animated.Value(0)
+
+  alphaSlideX = new Animated.Value(0)
+
+  alphaSlideY = new Animated.Value(0)
+
+  panX = new Animated.Value(30)
+
+  panY = new Animated.Value(30)
+
+  sliderLength = 0
+
+  saturationSliderLength = 0
+
+  alphaSliderLength = 0
+
+  wheelSize = 0
+
+  alphaSliderMeasure = {}
+
+  saturationSliderMeasure = {}
+
+  sliderMeasure = {}
+
+  wheelMeasure = {}
+
+  wheelWidth = 0
+
   static defaultProps = {
     row: false, // use row or vertical layout
     noSnap: false, // enables snapping on the center of wheel and edges of wheel and slider
@@ -192,194 +219,307 @@ module.exports = class ColorPicker extends Component {
     swatchesLast: true, // if false swatches are shown before wheel
     swatchesOnly: false, // show swatch only and hide wheel and slider
     swatchesHitSlop: undefined, // defines how far the touch event can start away from the swatch
-    color: "#ffffff", //  color of the color picker
+    color: '#ffffff', //  color of the color picker
+    alpha: 1, //  alpha of the color picker
     palette: PALETTE, // palette colors of swatches
     shadeWheelThumb: true, // if true the wheel thumb color is shaded
     shadeSliderThumb: false, // if true the slider thumb color is shaded
     autoResetSlider: false, // if true the slider thumb is reset to 0 value when wheel thumb is moved
     onInteractionStart: () => {}, // callback function triggered when user begins dragging slider/wheel
+    onAlphaChange: () => {}, // callback function providing current color while user is actively dragging slider/wheel
     onColorChange: () => {}, // callback function providing current color while user is actively dragging slider/wheel
     onColorChangeComplete: () => {}, // callback function providing final color when user stops dragging slider/wheel
-  };
+  }
+
   wheelPanResponder = PanResponder.create({
     onStartShouldSetPanResponderCapture: (event, gestureState) => {
-      const { nativeEvent } = event;
-      if (this.outOfWheel(nativeEvent)) return;
-      this.wheelMovement(event, gestureState);
-      this.updateHueSaturation({ nativeEvent });
-      return true;
+      const { nativeEvent } = event
+      if (this.outOfWheel(nativeEvent)) {
+        return
+      }
+      this.wheelMovement(event, gestureState)
+      this.updateHueSaturation({ nativeEvent })
+      return true
     },
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponderCapture: () => true,
+    onStartShouldSetPanResponder: () => {
+      return true
+    },
+    onMoveShouldSetPanResponderCapture: () => {
+      return true
+    },
     onPanResponderGrant: (event, gestureState) => {
-      const { locationX, locationY } = event.nativeEvent;
-      const { moveX, moveY, x0, y0 } = gestureState;
+      const { locationX, locationY } = event.nativeEvent
+      const { moveX, moveY, x0, y0 } = gestureState
       const x = x0 - locationX,
-        y = y0 - locationY;
-      this.wheelMeasure.x = x;
-      this.wheelMeasure.y = y;
-      this.props.onInteractionStart();
-      return true;
+        y = y0 - locationY
+      this.wheelMeasure.x = x
+      this.wheelMeasure.y = y
+      this.props.onInteractionStart()
+      return true
     },
     onPanResponderMove: (event, gestureState) => {
       if (
         event &&
         event.nativeEvent &&
-        typeof event.nativeEvent.preventDefault == "function"
-      )
-        event.nativeEvent.preventDefault();
+        typeof event.nativeEvent.preventDefault === 'function'
+      ) {
+        event.nativeEvent.preventDefault()
+      }
       if (
         event &&
         event.nativeEvent &&
-        typeof event.nativeEvent.stopPropagation == "function"
-      )
-        event.nativeEvent.stopPropagation();
+        typeof event.nativeEvent.stopPropagation === 'function'
+      ) {
+        event.nativeEvent.stopPropagation()
+      }
       if (
         this.outOfWheel(event.nativeEvent) ||
         this.outOfBox(this.wheelMeasure, gestureState)
       ) {
-        return;
+        return
       }
-      this.wheelMovement(event, gestureState);
+      this.wheelMovement(event, gestureState)
     },
-    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => {
+      return true
+    },
     onPanResponderRelease: (event, gestureState) => {
-      const { nativeEvent } = event;
-      const { radius } = this.polar(nativeEvent);
-      const { hsv } = this.state;
-      const { h, s, v } = hsv;
-      if (!this.props.noSnap && radius <= 0.1 && radius >= 0)
-        this.animate("#ffffff", "hs", false, true);
-      if (!this.props.noSnap && radius >= 0.95 && radius <= 1)
-        this.animate(this.state.currentColor, "hs", true);
-      if (this.props.onColorChangeComplete)
-        this.props.onColorChangeComplete(hsv2Hex(hsv), this.state.alpha);
-      this.setState({ currentColor: this.state.currentColor }, (x) =>
-        this.renderDiscs()
-      );
+      const { nativeEvent } = event
+      const { radius } = this.polar(nativeEvent)
+      const { hsv } = this.state
+      const { h, s, v } = hsv
+      if (!this.props.noSnap && radius <= 0.1 && radius >= 0) {
+        // this.animate("#ffffff", "hs", false, true);
+      }
+      if (!this.props.noSnap && radius >= 0.95 && radius <= 1) {
+        // this.animate(this.state.currentColor, "hs", true);
+      }
+      if (this.props.onColorChangeComplete) {
+        this.props.onColorChangeComplete(hsv2Hex(hsv))
+      }
+      this.setState({ currentColor: this.state.currentColor }, (x) => {
+        return this.renderDiscs()
+      })
     },
-  });
+  })
+
   sliderPanResponder = PanResponder.create({
     onStartShouldSetPanResponderCapture: (event, gestureState) => {
-      const { nativeEvent } = event;
-      if (this.outOfSlider(nativeEvent)) return;
-      this.sliderMovement(event, gestureState);
-      this.updateValue({ nativeEvent });
-      return true;
+      const { nativeEvent } = event
+      if (this.outOfSlider(nativeEvent)) {
+        return
+      }
+      this.sliderMovement(event, gestureState)
+      this.updateValue({ nativeEvent })
+      return true
     },
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponderCapture: () => true,
+    onStartShouldSetPanResponder: () => {
+      return true
+    },
+    onMoveShouldSetPanResponderCapture: () => {
+      return true
+    },
     onPanResponderGrant: (event, gestureState) => {
-      const { locationX, locationY } = event.nativeEvent;
-      const { moveX, moveY, x0, y0 } = gestureState;
+      const { locationX, locationY } = event.nativeEvent
+      const { moveX, moveY, x0, y0 } = gestureState
       const x = x0 - locationX,
-        y = y0 - locationY;
-      this.sliderMeasure.x = x;
-      this.sliderMeasure.y = y;
-      this.props.onInteractionStart();
-      return true;
+        y = y0 - locationY
+      this.sliderMeasure.x = x
+      this.sliderMeasure.y = y
+      this.props.onInteractionStart()
+      return true
     },
     onPanResponderMove: (event, gestureState) => {
       if (
         event &&
         event.nativeEvent &&
-        typeof event.nativeEvent.preventDefault == "function"
-      )
-        event.nativeEvent.preventDefault();
+        typeof event.nativeEvent.preventDefault === 'function'
+      ) {
+        event.nativeEvent.preventDefault()
+      }
       if (
         event &&
         event.nativeEvent &&
-        typeof event.nativeEvent.stopPropagation == "function"
-      )
-        event.nativeEvent.stopPropagation();
+        typeof event.nativeEvent.stopPropagation === 'function'
+      ) {
+        event.nativeEvent.stopPropagation()
+      }
       if (
         this.outOfSlider(event.nativeEvent) ||
         this.outOfBox(this.sliderMeasure, gestureState)
       ) {
-        return;
+        return
       }
-      this.sliderMovement(event, gestureState);
+      this.sliderMovement(event, gestureState)
     },
-    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => {
+      return true
+    },
     onPanResponderRelease: (event, gestureState) => {
-      const { nativeEvent } = event;
-      const { hsv } = this.state;
-      const { h, s, v } = hsv;
-      const ratio = this.ratio(nativeEvent);
-      if (!this.props.noSnap && ratio <= 0.05 && ratio >= 0)
-        this.animate(this.state.currentColor, "v", false);
-      if (!this.props.noSnap && ratio >= 0.95 && ratio <= 1)
-        this.animate(this.state.currentColor, "v", true);
-      if (this.props.onColorChangeComplete)
-        this.props.onColorChangeComplete(hsv2Hex(hsv), this.state.alpha);
+      const { nativeEvent } = event
+      const { hsv } = this.state
+      const { h, s, v } = hsv
+      const ratio = this.ratio(nativeEvent)
+      if (!this.props.noSnap && ratio <= 0.05 && ratio >= 0) {
+        // this.animate(this.state.currentColor, "v", false);
+      }
+      if (!this.props.noSnap && ratio >= 0.95 && ratio <= 1) {
+        // this.animate(this.state.currentColor, "v", true);
+      }
+      if (this.props.onColorChangeComplete) {
+        this.props.onColorChangeComplete(hsv2Hex(hsv))
+      }
     },
-  });
+  })
+
   alphaSliderPanResponder = PanResponder.create({
     onStartShouldSetPanResponderCapture: (event, gestureState) => {
-      const { nativeEvent } = event;
-      if (this.outOfSlider(nativeEvent)) return;
-      this.alphaSliderMovement(event, gestureState);
-      this.updateAlphaValue({ nativeEvent });
-      return true;
+      const { nativeEvent } = event
+      if (this.outOfSlider(nativeEvent)) {
+        return
+      }
+      this.alphaSliderMovement(event, gestureState)
+      this.updateAlphaValue({ nativeEvent })
+      return true
     },
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponderCapture: () => true,
+    onStartShouldSetPanResponder: () => {
+      return true
+    },
+    onMoveShouldSetPanResponderCapture: () => {
+      return true
+    },
     onPanResponderGrant: (event, gestureState) => {
-      const { locationX, locationY } = event.nativeEvent;
-      const { moveX, moveY, x0, y0 } = gestureState;
+      const { locationX, locationY } = event.nativeEvent
+      const { moveX, moveY, x0, y0 } = gestureState
       const x = x0 - locationX,
-        y = y0 - locationY;
-      this.alphaSliderMeasure.x = x;
-      this.alphaSliderMeasure.y = y;
-      this.props.onInteractionStart();
-      return true;
+        y = y0 - locationY
+      this.alphaSliderMeasure.x = x
+      this.alphaSliderMeasure.y = y
+      this.props.onInteractionStart()
+      return true
     },
     onPanResponderMove: (event, gestureState) => {
       if (
         event &&
         event.nativeEvent &&
-        typeof event.nativeEvent.preventDefault == "function"
-      )
-        event.nativeEvent.preventDefault();
+        typeof event.nativeEvent.preventDefault === 'function'
+      ) {
+        event.nativeEvent.preventDefault()
+      }
       if (
         event &&
         event.nativeEvent &&
-        typeof event.nativeEvent.stopPropagation == "function"
-      )
-        event.nativeEvent.stopPropagation();
+        typeof event.nativeEvent.stopPropagation === 'function'
+      ) {
+        event.nativeEvent.stopPropagation()
+      }
       if (
         this.outOfSlider(event.nativeEvent) ||
         this.outOfBox(this.alphaSliderMeasure, gestureState)
       ) {
-        return;
+        return
       }
-      this.alphaSliderMovement(event, gestureState);
+      this.alphaSliderMovement(event, gestureState)
     },
-    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => {
+      return true
+    },
     onPanResponderRelease: (event, gestureState) => {
-      const { nativeEvent } = event;
-      const { hsv } = this.state;
-      const { h, s, v } = hsv;
-      const ratio = this.ratio(nativeEvent);
-      if (!this.props.noSnap && ratio <= 0.05 && ratio >= 0)
-        this.animate(this.state.currentColor, "v", false);
-      if (!this.props.noSnap && ratio >= 0.95 && ratio <= 1)
-        this.animate(this.state.currentColor, "v", true);
-      if (this.props.onColorChangeComplete)
-        this.props.onColorChangeComplete(hsv2Hex(hsv), this.state.alpha);
+      const { nativeEvent } = event
+      const { hsv } = this.state
+      const { h, s, v } = hsv
+      const ratio = this.ratio(nativeEvent)
+      if (!this.props.noSnap && ratio <= 0.05 && ratio >= 0) {
+        // this.animate(this.state.currentColor, "v", false);
+      }
+      if (!this.props.noSnap && ratio >= 0.95 && ratio <= 1) {
+        // this.animate(this.state.currentColor, "v", true);
+      }
+      if (this.props.onColorChangeComplete) {
+        this.props.onColorChangeComplete(hsv2Hex(hsv))
+      }
     },
-  });
+  })
+
+  saturationSliderPanResponder = PanResponder.create({
+    onStartShouldSetPanResponderCapture: (event, gestureState) => {
+      const { nativeEvent } = event
+      if (this.outOfSlider(nativeEvent)) {
+        return
+      }
+      this.saturationSliderMovement(event, gestureState)
+      this.updateSaturationValue({ nativeEvent })
+      return true
+    },
+    onStartShouldSetPanResponder: () => {
+      return true
+    },
+    onMoveShouldSetPanResponderCapture: () => {
+      return true
+    },
+    onPanResponderGrant: (event, gestureState) => {
+      const { locationX, locationY } = event.nativeEvent
+      const { moveX, moveY, x0, y0 } = gestureState
+      const x = x0 - locationX,
+        y = y0 - locationY
+      this.saturationSliderMeasure.x = x
+      this.saturationSliderMeasure.y = y
+      this.props.onInteractionStart()
+      return true
+    },
+    onPanResponderMove: (event, gestureState) => {
+      if (
+        event &&
+        event.nativeEvent &&
+        typeof event.nativeEvent.preventDefault === 'function'
+      ) {
+        event.nativeEvent.preventDefault()
+      }
+      if (
+        event &&
+        event.nativeEvent &&
+        typeof event.nativeEvent.stopPropagation === 'function'
+      ) {
+        event.nativeEvent.stopPropagation()
+      }
+      if (
+        this.outOfSlider(event.nativeEvent) ||
+        this.outOfBox(this.saturationSliderMeasure, gestureState)
+      ) {
+        return
+      }
+      this.saturationSliderMovement(event, gestureState)
+    },
+    onMoveShouldSetPanResponder: () => {
+      return true
+    },
+    onPanResponderRelease: (event, gestureState) => {
+      const { nativeEvent } = event
+      const { hsv } = this.state
+      const { h, s, v } = hsv
+      const ratio = this.ratio(nativeEvent)
+      if (!this.props.noSnap && ratio <= 0.05 && ratio >= 0) {
+        // this.animate(this.state.currentColor, "s", false);
+      }
+      if (!this.props.noSnap && ratio >= 0.95 && ratio <= 1) {
+        // this.animate(this.state.currentColor, "s", true);
+      }
+      if (this.props.onColorChangeComplete) {
+        this.props.onColorChangeComplete(hsv2Hex(hsv))
+      }
+    },
+  })
+
   constructor(props) {
-    super(props);
-    this.mounted = false;
+    super(props)
+    this.mounted = false
     this.state = {
       wheelOpacity: 0,
       sliderOpacity: 0,
       hueSaturation: hsv2Hex(this.color.h, this.color.s, 100),
       currentColor: props.color,
-      alpha: 1,
       hsv: { h: 0, s: 0, v: 100 },
-    };
+    }
     this.wheelMovement = new Animated.event(
       [
         {
@@ -394,7 +534,7 @@ module.exports = class ColorPicker extends Component {
         useNativeDriver: false,
         listener: this.updateHueSaturation,
       }
-    );
+    )
     this.sliderMovement = new Animated.event(
       [
         {
@@ -409,7 +549,7 @@ module.exports = class ColorPicker extends Component {
         useNativeDriver: false,
         listener: this.updateValue,
       }
-    );
+    )
     this.alphaSliderMovement = new Animated.event(
       [
         {
@@ -424,51 +564,76 @@ module.exports = class ColorPicker extends Component {
         useNativeDriver: false,
         listener: this.updateAlphaValue,
       }
-    );
-    this.swatchAnim = props.palette.map((c, i) => new Animated.Value(0));
-    this.discAnim = `1`
+    )
+    this.saturationSliderMovement = new Animated.event(
+      [
+        {
+          nativeEvent: {
+            locationX: this.saturationSlideX,
+            locationY: this.saturationSlideY,
+          },
+        },
+        null,
+      ],
+      {
+        useNativeDriver: false,
+        listener: this.updateSaturationValue,
+      }
+    )
+    this.swatchAnim = props.palette.map((c, i) => {
+      return new Animated.Value(0)
+    })
+    this.discAnim = '1'
       .repeat(props.discreteLength)
-      .split("")
-      .map((c, i) => new Animated.Value(0));
-    this.renderSwatches();
-    this.renderDiscs();
+      .split('')
+      .map((c, i) => {
+        return new Animated.Value(0)
+      })
+    this.renderSwatches()
+    this.renderDiscs()
   }
+
   componentDidMount() {
-    this.mounted = true;
+    this.mounted = true
   }
+
   componentWillUnmount() {
-    this.mounted = false;
+    this.mounted = false
   }
+
   onSwatchPress = (c, i) => {
-    this.swatchAnim[i].stopAnimation();
+    this.swatchAnim[i].stopAnimation()
     Animated.timing(this.swatchAnim[i], {
       toValue: 1,
       useNativeDriver: false,
       duration: 500,
     }).start((x) => {
-      this.swatchAnim[i].setValue(0);
-    });
-    this.animate(c);
-  };
+      this.swatchAnim[i].setValue(0)
+    })
+    this.animate(c)
+  }
+
   onDiscPress = (c, i) => {
-    this.discAnim[i].stopAnimation();
+    this.discAnim[i].stopAnimation()
     Animated.timing(this.discAnim[i], {
       toValue: 1,
       useNativeDriver: false,
       duration: 500,
     }).start((x) => {
-      this.discAnim[i].setValue(0);
-    });
-    const val = i >= 9 ? 100 : 11 * i;
-    this.updateValue({ nativeEvent: null }, val);
-    this.updateAlphaValue({ nativeEvent: null }, 1);
-    this.animate({ h: this.color.h, s: this.color.s, v: val }, "v");
-  };
+      this.discAnim[i].setValue(0)
+    })
+    const val = i >= 9 ? 100 : 11 * i
+    this.updateValue({ nativeEvent: null }, val)
+    this.updateAlphaValue({ nativeEvent: null }, this.props.alpha)
+    this.animate({ h: this.color.h, s: this.color.s, v: val }, 'v')
+  }
+
   onSquareLayout = (e) => {
-    let { x, y, width, height } = e.nativeEvent.layout;
-    this.wheelWidth = Math.min(width, height);
-    this.tryForceUpdate();
-  };
+    let { x, y, width, height } = e.nativeEvent.layout
+    this.wheelWidth = Math.min(width, height)
+    this.tryForceUpdate()
+  }
+
   onWheelLayout = (e) => {
     /*
      * const {x, y, width, height} = nativeEvent.layout
@@ -477,148 +642,194 @@ module.exports = class ColorPicker extends Component {
      * but in measureInWindow they are relative to the window
      */
     this.wheel.measureInWindow((x, y, width, height) => {
-      this.wheelMeasure = { x, y, width, height };
-      this.wheelSize = width;
+      this.wheelMeasure = { x, y, width, height }
+      this.wheelSize = width
       // this.panX.setOffset(-width/2)
       // this.panY.setOffset(-width/2)
-      this.update(this.state.currentColor);
-      this.setState({ wheelOpacity: 1 });
-    });
-  };
+      this.update(this.state.currentColor)
+      this.setState({ wheelOpacity: 1 })
+    })
+  }
+
   onAlphaSliderLayout = (e) => {
     this.alphaSlider.measureInWindow((x, y, width, height) => {
-      this.alphaSliderMeasure = { x, y, width, height };
-      this.alphaSliderLength = this.props.row ? height - width : width - height;
-      // this.slideX.setOffset(-width/2)
-      // this.slideY.setOffset(-width/2)
-      this.update(this.state.currentColor);
-      this.setState({ sliderOpacity: 1 });
-    });
-  };
+      this.alphaSliderMeasure = { x, y, width, height }
+      this.alphaSliderLength = this.props.row ? height - width : width - height
+      this.alphaSlideX.setOffset(-this.props.sliderSize / 2)
+      this.alphaSlideY.setOffset(-this.props.sliderSize / 2)
+      this.updateAlphaValue({ nativeEvent: null }, this.props.alpha)
+      this.setState({ sliderOpacity: 1 })
+    })
+  }
+
+  onSaturationSliderLayout = (e) => {
+    this.saturationSlider.measureInWindow((x, y, width, height) => {
+      this.saturationSliderMeasure = { x, y, width, height }
+      this.saturationSliderLength = this.props.row
+        ? height - width
+        : width - height
+      this.saturationSlideX.setOffset(-this.props.sliderSize / 2)
+      this.saturationSlideY.setOffset(-this.props.sliderSize / 2)
+      this.update(this.state.currentColor)
+      this.setState({ sliderOpacity: 1 })
+    })
+  }
+
   onSliderLayout = (e) => {
     this.slider.measureInWindow((x, y, width, height) => {
-      this.sliderMeasure = { x, y, width, height };
-      this.sliderLength = this.props.row ? height - width : width - height;
-      // this.slideX.setOffset(-width/2)
-      // this.slideY.setOffset(-width/2)
-      this.update(this.state.currentColor);
-      this.setState({ sliderOpacity: 1 });
-    });
-  };
+      this.sliderMeasure = { x, y, width, height }
+      this.sliderLength = this.props.row ? height - width : width - height
+      this.slideX.setOffset(-this.props.sliderSize / 2)
+      this.slideY.setOffset(-this.props.sliderSize / 2)
+      this.update(this.state.currentColor)
+      this.setState({ sliderOpacity: 1 })
+    })
+  }
+
   outOfBox(measure, gestureState) {
-    const { x, y, width, height } = measure;
-    const { moveX, moveY, x0, y0 } = gestureState;
+    const { x, y, width, height } = measure
+    const { moveX, moveY, x0, y0 } = gestureState
     // console.log(`${moveX} , ${moveY} / ${x} , ${y} / ${locationX} , ${locationY}`);
     return !(
       moveX >= x &&
       moveX <= x + width &&
       moveY >= y &&
       moveY <= y + height
-    );
+    )
   }
+
   outOfWheel(nativeEvent) {
-    const { radius } = this.polar(nativeEvent);
-    return radius > 1;
+    const { radius } = this.polar(nativeEvent)
+    const outOfWheel = radius > 1
+    // if (outOfWheel) {
+    //   console.log("Out of wheel!");
+    // }
+    return outOfWheel
   }
+
   outOfSlider(nativeEvent) {
-    const row = this.props.row;
-    const loc = row ? nativeEvent.locationY : nativeEvent.locationX;
-    const { width, height } = this.sliderMeasure;
-    return loc > (row ? height - width : width - height);
+    const row = this.props.row
+    const loc = row ? nativeEvent.locationY : nativeEvent.locationX
+    const { width, height } = this.sliderMeasure
+    const outOfSlider = loc > (row ? height - width : width - height)
+    // if (outOfSlider) {
+    //   console.log("Out of slider");
+    // }
+    return outOfSlider
   }
+
   val(v) {
     const d = this.props.discrete,
-      r = 11 * Math.round(v / 11);
-    return d ? (r >= 99 ? 100 : r) : v;
+      r = 11 * Math.round(v / 11)
+    return d ? (r >= 99 ? 100 : r) : v
   }
+
   ratio(nativeEvent) {
-    const row = this.props.row;
-    const loc = row ? nativeEvent.locationY : nativeEvent.locationX;
-    const { width, height } = this.sliderMeasure;
-    return 1 - loc / (row ? height - width : width - height);
+    const row = this.props.row
+    const loc = row ? nativeEvent.locationY : nativeEvent.locationX
+    const { width, height } = this.sliderMeasure
+    return 1 - loc / (row ? height - width : width - height)
   }
+
   polar(nativeEvent) {
     const lx = nativeEvent.locationX,
-      ly = nativeEvent.locationY;
-    const [x, y] = [lx - this.wheelSize / 2, ly - this.wheelSize / 2];
+      ly = nativeEvent.locationY
+    const [x, y] = [lx - this.wheelSize / 2, ly - this.wheelSize / 2]
     return {
       deg: Math.atan2(y, x) * (-180 / Math.PI),
       radius: Math.sqrt(y * y + x * x) / (this.wheelSize / 2),
-    };
+    }
   }
+
   cartesian(deg, radius) {
-    const r = (radius * this.wheelSize) / 2; // was normalized
-    const rad = (Math.PI * deg) / 180;
-    const x = r * Math.cos(rad);
-    const y = r * Math.sin(rad);
+    const r = (radius * this.wheelSize) / 2 // was normalized
+    const rad = (Math.PI * deg) / 180
+    const x = r * Math.cos(rad)
+    const y = r * Math.sin(rad)
     return {
       left: this.wheelSize / 2 + x,
       top: this.wheelSize / 2 - y,
-    };
+    }
   }
+
   updateHueSaturation = ({ nativeEvent }) => {
     const { deg, radius } = this.polar(nativeEvent),
       h = deg,
       s = 100 * radius,
-      v = this.color.v;
+      v = this.color.v
     // if(radius > 1 ) return
-    const hsv = { h, s, v }; // v: 100} // causes bug
+    const hsv = { h, s, v } // v: 100} // causes bug
     if (this.props.autoResetSlider === true) {
-      this.slideX.setValue(0);
-      this.slideY.setValue(0);
-      hsv.v = 100;
+      this.slideX.setValue(0)
+      this.slideY.setValue(0)
+      hsv.v = 100
     }
-    const currentColor = hsv2Hex(hsv);
-    this.color = hsv;
+    const currentColor = hsv2Hex(hsv)
+    this.color = hsv
+    this.saturationSlideX.setValue(
+      ((100 - this.color.s) / 100) * this.sliderLength
+    )
     this.setState({
       hsv,
       currentColor,
       hueSaturation: hsv2Hex(this.color.h, this.color.s, 100),
-    });
-    this.props.onColorChange(hsv2Hex(hsv), this.state.alpha);
+    })
+    this.props.onColorChange(hsv2Hex(hsv))
     // this.testData.deg = deg
     // this.testData.radius = radius
     // this.testData.pan = JSON.stringify({x:this.panX,y:this.panY})
     // this.testData.pan = JSON.stringify(this.state.pan.getTranslateTransform())
     // this.testView.forceUpdate()
-  };
+  }
+
   updateAlphaValue = ({ nativeEvent }, val) => {
-    const { h, s, v } = this.color,
-      a = typeof val == "number" ? val : 1 * this.ratio(nativeEvent);
-    const hsv = { h, s, v };
-    const currentColor = hsv2Hex(hsv);
-    this.color = hsv;
-    this.setState({
-      hsv,
-      alpha: a,
-      currentColor,
-      hueSaturation: hsv2Hex(this.color.h, this.color.s, 100),
-    });
-    this.props.onColorChange(hsv2Hex(hsv), a);
-  };
+    const a = typeof val === 'number' ? val : 1 * this.ratio(nativeEvent)
+    this.props.onAlphaChange(a)
+  }
+
   updateValue = ({ nativeEvent }, val) => {
     const { h, s } = this.color,
-      v = typeof val == "number" ? val : 100 * this.ratio(nativeEvent);
-    const hsv = { h, s, v };
-    const currentColor = hsv2Hex(hsv);
-    this.color = hsv;
+      v = typeof val === 'number' ? val : 100 * this.ratio(nativeEvent)
+    const hsv = { h, s, v }
+    const currentColor = hsv2Hex(hsv)
+    this.color = hsv
     this.setState({
       hsv,
       currentColor,
       hueSaturation: hsv2Hex(this.color.h, this.color.s, 100),
-    });
-    this.props.onColorChange(hsv2Hex(hsv), this.state.alpha);
-  };
+    })
+    this.props.onColorChange(hsv2Hex(hsv))
+  }
+
+  updateSaturationValue = ({ nativeEvent }, val) => {
+    const { h, v } = this.color,
+      s = typeof val === 'number' ? val : 100 * this.ratio(nativeEvent)
+    const hsv = { h, s, v }
+    const currentColor = hsv2Hex(hsv)
+    this.color = hsv
+    const { left, top } = this.cartesian(h, s / 100)
+    this.panX.setValue(left)
+    this.panY.setValue(top)
+    this.setState({
+      hsv,
+      currentColor,
+      hueSaturation: hsv2Hex(this.color.h, this.color.s, 100),
+    })
+    this.props.onColorChange(hsv2Hex(hsv))
+  }
+
   update = (color, who, max, force) => {
-    const isHex = /^#(([0-9a-f]{2}){3}|([0-9a-f]){3})$/i;
-    if (!isHex.test(color)) color = "#ffffff";
-    color = expandColor(color);
-    const specific = typeof who == "string",
-      who_hs = who == "hs",
-      who_v = who == "v";
-    let { h, s, v } = typeof color == "string" ? hex2Hsv(color) : color,
-      stt = {};
-    h = who_hs || !specific ? h : this.color.h;
+    const isHex = /^#(([0-9a-f]{2}){3}|([0-9a-f]){3})$/i
+    if (!isHex.test(color)) {
+      color = '#ffffff'
+    }
+    color = expandColor(color)
+    const specific = typeof who === 'string',
+      who_hs = who == 'hs',
+      who_v = who == 'v'
+    let { h, s, v } = typeof color === 'string' ? hex2Hsv(color) : color,
+      stt = {}
+    h = who_hs || !specific ? h : this.color.h
     s =
       who_hs && max
         ? 100
@@ -626,7 +837,7 @@ module.exports = class ColorPicker extends Component {
         ? 0
         : who_hs || !specific
         ? s
-        : this.color.s;
+        : this.color.s
     v =
       who_v && max
         ? 100
@@ -634,41 +845,43 @@ module.exports = class ColorPicker extends Component {
         ? 0
         : who_v || !specific
         ? v
-        : this.color.v;
-    const range = ((100 - v) / 100) * this.sliderLength;
-    const { left, top } = this.cartesian(h, s / 100);
-    const hsv = { h, s, v };
+        : this.color.v
+    const range = ((100 - v) / 100) * this.sliderLength
+    const { left, top } = this.cartesian(h, s / 100)
+    const hsv = { h, s, v }
     if (!specific || force) {
-      this.color = hsv;
-      stt.hueSaturation = hsv2Hex(this.color.h, this.color.s, 100);
+      this.color = hsv
+      stt.hueSaturation = hsv2Hex(this.color.h, this.color.s, 100)
       // this.setState({hueSaturation: hsv2Hex(this.color.h,this.color.s,100)})
     }
-    stt.currentColor = hsv2Hex(hsv);
+    stt.currentColor = hsv2Hex(hsv)
     this.setState(stt, (x) => {
-      this.tryForceUpdate();
-      this.renderDiscs();
-    });
+      this.tryForceUpdate()
+      this.renderDiscs()
+    })
     // this.setState({currentColor:hsv2Hex(hsv)}, x=>this.tryForceUpdate())
-    this.props.onColorChange(hsv2Hex(hsv), this.state.alpha);
-    if (this.props.onColorChangeComplete)
-      this.props.onColorChangeComplete(hsv2Hex(hsv), this.state.alpha);
+    this.props.onColorChange(hsv2Hex(hsv))
+    if (this.props.onColorChangeComplete) {
+      this.props.onColorChangeComplete(hsv2Hex(hsv))
+    }
     if (who_hs || !specific) {
-      this.panY.setValue(top); // - this.props.thumbSize / 2)
-      this.panX.setValue(left); // - this.props.thumbSize / 2)
+      this.panY.setValue(top) // - this.props.thumbSize / 2)
+      this.panX.setValue(left) // - this.props.thumbSize / 2)
     }
     if (who_v || !specific) {
-      this.slideX.setValue(range);
-      this.slideY.setValue(range);
+      this.slideX.setValue(range)
+      this.slideY.setValue(range)
     }
-  };
+  }
+
   animate = (color, who, max, force) => {
-    color = expandColor(color);
-    const specific = typeof who == "string",
-      who_hs = who == "hs",
-      who_v = who == "v";
-    let { h, s, v } = typeof color == "string" ? hex2Hsv(color) : color,
-      stt = {};
-    h = who_hs || !specific ? h : this.color.h;
+    color = expandColor(color)
+    const specific = typeof who === 'string',
+      who_hs = who == 'hs',
+      who_v = who == 'v'
+    let { h, s, v } = typeof color === 'string' ? hex2Hsv(color) : color,
+      stt = {}
+    h = who_hs || !specific ? h : this.color.h
     s =
       who_hs && max
         ? 100
@@ -676,7 +889,7 @@ module.exports = class ColorPicker extends Component {
         ? 0
         : who_hs || !specific
         ? s
-        : this.color.s;
+        : this.color.s
     v =
       who_v && max
         ? 100
@@ -684,27 +897,30 @@ module.exports = class ColorPicker extends Component {
         ? 0
         : who_v || !specific
         ? v
-        : this.color.v;
-    const range = ((100 - v) / 100) * this.sliderLength;
-    const { left, top } = this.cartesian(h, s / 100);
-    const hsv = { h, s, v };
+        : this.color.v
+    const range = ((100 - v) / 100) * this.sliderLength
+    const satRange = ((100 - s) / 100) * this.sliderLength
+    const alphaRange = ((1 - this.props.alpha) / 1) * this.alphaSliderLength
+    const { left, top } = this.cartesian(h, s / 100)
+    const hsv = { h, s, v }
     // console.log(hsv);
     if (!specific || force) {
-      this.color = hsv;
-      stt.hueSaturation = hsv2Hex(this.color.h, this.color.s, 100);
+      this.color = hsv
+      stt.hueSaturation = hsv2Hex(this.color.h, this.color.s, 100)
       // this.setState({hueSaturation: hsv2Hex(this.color.h,this.color.s,100)})
     }
-    stt.currentColor = hsv2Hex(hsv);
+    stt.currentColor = hsv2Hex(hsv)
     this.setState(stt, (x) => {
-      this.tryForceUpdate();
-      this.renderDiscs();
-    });
+      this.tryForceUpdate()
+      this.renderDiscs()
+    })
     // this.setState({currentColor:hsv2Hex(hsv)}, x=>this.tryForceUpdate())
-    this.props.onColorChange(hsv2Hex(hsv), this.state.alpha);
-    if (this.props.onColorChangeComplete)
-      this.props.onColorChangeComplete(hsv2Hex(hsv), this.state.alpha);
-    let anims = [];
-    if (who_hs || !specific)
+    this.props.onColorChange(hsv2Hex(hsv))
+    if (this.props.onColorChangeComplete) {
+      this.props.onColorChangeComplete(hsv2Hex(hsv))
+    }
+    let anims = []
+    if (who_hs || !specific) {
       anims.push(
         //{//
         Animated.spring(this.panX, {
@@ -717,8 +933,9 @@ module.exports = class ColorPicker extends Component {
           useNativeDriver: false,
           friction: 90,
         }) //.start()//
-      ); //}//
-    if (who_v || !specific)
+      )
+    } //}//
+    if (who_v || !specific) {
       anims.push(
         //{//
         Animated.spring(this.slideX, {
@@ -730,87 +947,81 @@ module.exports = class ColorPicker extends Component {
           toValue: range,
           useNativeDriver: false,
           friction: 90,
-        }), //.start()//
-        Animated.spring(this.alphaSlideX, {
-          toValue: range,
-          useNativeDriver: false,
-          friction: 90,
-        }), //.start()//
-        Animated.spring(this.alphaSlideY, {
-          toValue: range,
-          useNativeDriver: false,
-          friction: 90,
         }) //.start()//
-      ); //}//
-    Animated.parallel(anims).start();
-  };
+      )
+    } //}//
+    anims.push(
+      Animated.spring(this.alphaSlideX, {
+        toValue: alphaRange,
+        useNativeDriver: false,
+        friction: 90,
+      }), //.start()//
+      Animated.spring(this.alphaSlideY, {
+        toValue: alphaRange,
+        useNativeDriver: false,
+        friction: 90,
+      }) //.start()//
+    )
+    anims.push(
+      Animated.spring(this.saturationSlideX, {
+        toValue: satRange,
+        useNativeDriver: false,
+        friction: 90,
+      }), //.start()//
+      Animated.spring(this.saturationSlideY, {
+        toValue: satRange,
+        useNativeDriver: false,
+        friction: 90,
+      }) //.start()//
+    )
+    Animated.parallel(anims).start()
+  }
+
   // componentWillReceiveProps(nextProps) {
   // 	const { color } = nextProps
   // 	if(color !== this.props.color) this.animate(color)
   // }
   componentDidUpdate(prevProps) {
-    const { color } = this.props;
-    if (color !== prevProps.color) this.animate(color);
+    const { color } = this.props
+    if (color !== prevProps.color) {
+      this.animate(color)
+    }
   }
+
   revert() {
-    if (this.mounted) this.animate(this.props.color);
+    if (this.mounted) {
+      this.animate(this.props.color)
+    }
   }
+
   tryForceUpdate() {
-    if (this.mounted) this.forceUpdate();
+    if (this.mounted) {
+      this.forceUpdate()
+    }
   }
+
   renderSwatches() {
-    this.swatches = this.props.palette.map((c, i) => (
-      <View
-        style={[ss.swatch, { backgroundColor: c }]}
-        key={"S" + i}
-        hitSlop={this.props.swatchesHitSlop}
-      >
-        <TouchableWithoutFeedback
-          onPress={(x) => this.onSwatchPress(c, i)}
-          hitSlop={this.props.swatchesHitSlop}
-        >
-          <Animated.View
-            style={[
-              ss.swatchTouch,
-              {
-                backgroundColor: c,
-                transform: [
-                  {
-                    scale: this.swatchAnim[i].interpolate({
-                      inputRange: [0, 0.5, 1],
-                      outputRange: [0.666, 1, 0.666],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          />
-        </TouchableWithoutFeedback>
-      </View>
-    ));
-  }
-  renderDiscs() {
-    this.disc = `1`
-      .repeat(this.props.discreteLength)
-      .split("")
-      .map((c, i) => (
+    this.swatches = this.props.palette.map((c, i) => {
+      return (
         <View
-          style={[ss.swatch, { backgroundColor: this.state.hueSaturation }]}
-          key={"D" + i}
+          style={[ss.swatch, { backgroundColor: c }]}
+          key={'S' + i}
           hitSlop={this.props.swatchesHitSlop}
         >
           <TouchableWithoutFeedback
-            onPress={(x) => this.onDiscPress(c, i)}
+            onPress={(x) => {
+              return this.onSwatchPress(c, i)
+            }}
             hitSlop={this.props.swatchesHitSlop}
           >
             <Animated.View
               style={[
                 ss.swatchTouch,
                 {
-                  backgroundColor: this.state.hueSaturation,
+                  backgroundColor: c,
                   transform: [
                     {
-                      scale: this.discAnim[i].interpolate({
+                      scale: this.swatchAnim[i].interpolate({
                         inputRange: [0, 0.5, 1],
                         outputRange: [0.666, 1, 0.666],
                       }),
@@ -818,23 +1029,64 @@ module.exports = class ColorPicker extends Component {
                   ],
                 },
               ]}
-            >
-              <View
-                style={[
-                  ss.wheelImg,
-                  {
-                    backgroundColor: "#000",
-                    opacity: 1 - (i >= 9 ? 1 : (i * 11) / 100),
-                  },
-                ]}
-              />
-            </Animated.View>
+            />
           </TouchableWithoutFeedback>
         </View>
-      ))
-      .reverse();
-    this.tryForceUpdate();
+      )
+    })
   }
+
+  renderDiscs() {
+    this.disc = '1'
+      .repeat(this.props.discreteLength)
+      .split('')
+      .map((c, i) => {
+        return (
+          <View
+            style={[ss.swatch, { backgroundColor: this.state.hueSaturation }]}
+            key={'D' + i}
+            hitSlop={this.props.swatchesHitSlop}
+          >
+            <TouchableWithoutFeedback
+              onPress={(x) => {
+                return this.onDiscPress(c, i)
+              }}
+              hitSlop={this.props.swatchesHitSlop}
+            >
+              <Animated.View
+                style={[
+                  ss.swatchTouch,
+                  {
+                    backgroundColor: this.state.hueSaturation,
+                    transform: [
+                      {
+                        scale: this.discAnim[i].interpolate({
+                          inputRange: [0, 0.5, 1],
+                          outputRange: [0.666, 1, 0.666],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    ss.wheelImg,
+                    {
+                      backgroundColor: '#000',
+                      opacity: 1 - (i >= 9 ? 1 : (i * 11) / 100),
+                    },
+                  ]}
+                />
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </View>
+        )
+      })
+      .reverse()
+    this.tryForceUpdate()
+  }
+
   render() {
     const {
       style,
@@ -846,21 +1098,28 @@ module.exports = class ColorPicker extends Component {
       sliderHidden,
       discrete,
       row,
-    } = this.props;
-    const swatches = !!(this.props.swatches || swatchesOnly);
+    } = this.props
+    const swatches = !!(this.props.swatches || swatchesOnly)
     const hsv = hsv2Hex(this.color),
-      hex = hsv2Hex(this.color.h, this.color.s, 100);
+      hex = hsv2Hex(this.color.h, this.color.s, 100)
     const wheelPanHandlers =
-      (this.wheelPanResponder && this.wheelPanResponder.panHandlers) || {};
+      (this.wheelPanResponder && this.wheelPanResponder.panHandlers) || {}
     const sliderPanHandlers =
-      (this.sliderPanResponder && this.sliderPanResponder.panHandlers) || {};
+      (this.sliderPanResponder && this.sliderPanResponder.panHandlers) || {}
+    const saturationSliderPanHandlers =
+      (this.saturationSliderPanResponder &&
+        this.saturationSliderPanResponder.panHandlers) ||
+      {}
     const alphaSliderPanHandlers =
       (this.alphaSliderPanResponder &&
         this.alphaSliderPanResponder.panHandlers) ||
-      {};
-    const opacity = this.state.wheelOpacity; // * this.state.sliderOpacity
-    const margin = swatchesOnly ? 0 : gapSize;
+      {}
+    const opacity = this.state.wheelOpacity // * this.state.sliderOpacity
+    const margin = swatchesOnly ? 0 : gapSize
     const wheelThumbStyle = {
+      shadowColor: '#000',
+      shadowOpacity: 0.4,
+      shadowOffset: { x: 0, y: 0 },
       width: thumbSize,
       height: thumbSize,
       borderRadius: thumbSize / 2,
@@ -872,13 +1131,16 @@ module.exports = class ColorPicker extends Component {
       left: this.panX,
       top: this.panY,
       opacity,
-      ////
       // transform: [{translateX:this.panX},{translateY:this.panY}],
       // left: -this.props.thumbSize/2,
       // top: -this.props.thumbSize/2,
       // zIndex: 2,
-    };
+    }
     const sliderThumbStyle = {
+      transform: [{ scale: 1.2 }, { translateY: 0 }],
+      shadowColor: '#000',
+      shadowOpacity: 0.4,
+      shadowOffset: { x: 0, y: 0 },
       left: row ? 0 : this.slideX,
       top: row ? this.slideY : 0,
       // transform: [row?{translateX:8}:{translateY:8}],
@@ -887,8 +1149,26 @@ module.exports = class ColorPicker extends Component {
       height: sliderSize,
       width: sliderSize,
       opacity,
-    };
+    }
+    const saturationSliderThumbStyle = {
+      transform: [{ scale: 1.2 }, { translateY: 0 }],
+      shadowColor: '#000',
+      shadowOpacity: 0.4,
+      shadowOffset: { x: 0, y: 0 },
+      left: row ? 0 : this.saturationSlideX,
+      top: row ? this.saturationSlideY : 0,
+      // transform: [row?{translateX:8}:{translateY:8}],
+      backgroundColor: this.props.shadeSliderThumb === true ? hsv : hex,
+      borderRadius: sliderSize / 2,
+      height: sliderSize,
+      width: sliderSize,
+      opacity,
+    }
     const alphaSliderThumbStyle = {
+      transform: [{ scale: 1.2 }, { translateY: 0 }],
+      shadowColor: '#000',
+      shadowOpacity: 0.4,
+      shadowOffset: { x: 0, y: 0 },
       left: row ? 0 : this.alphaSlideX,
       top: row ? this.alphaSlideY : 0,
       // transform: [row?{translateX:8}:{translateY:8}],
@@ -897,37 +1177,49 @@ module.exports = class ColorPicker extends Component {
       height: sliderSize,
       width: sliderSize,
       opacity,
-    };
+    }
     const sliderStyle = {
-      width: row ? sliderSize : "100%",
-      height: row ? "100%" : sliderSize,
+      width: row ? sliderSize : '100%',
+      height: row ? '100%' : sliderSize,
       marginLeft: row ? gapSize : 0,
       marginTop: row ? 0 : gapSize,
       borderRadius: sliderSize / 2,
-    };
+    }
     const swatchStyle = {
-      flexDirection: row ? "column" : "row",
-      width: row ? 20 : "100%",
-      height: row ? "100%" : 20,
+      flexDirection: row ? 'column' : 'row',
+      width: row ? 20 : '100%',
+      height: row ? '100%' : 20,
       marginLeft: row ? margin : 0,
       marginTop: row ? 0 : margin,
-    };
+    }
     const swatchFirstStyle = {
       marginTop: 0,
       marginLeft: 0,
       marginRight: row ? margin : 0,
       marginBottom: row ? 0 : margin,
-    };
+    }
     // console.log('RENDER >>',row,thumbSize,sliderSize)
     return (
-      <View style={[ss.root, row ? { flexDirection: "row" } : {}, style]}>
+      <View
+        style={[
+          ss.root,
+          row
+            ? {
+                flexDirection: 'row',
+              }
+            : {
+                transform: [{ translateX: this.props.sliderSize / 2 }],
+              },
+          style,
+        ]}
+      >
         {swatches && !swatchesLast && (
-          <View style={[ss.swatches, swatchStyle, swatchFirstStyle]} key={"SW"}>
+          <View style={[ss.swatches, swatchStyle, swatchFirstStyle]} key={'SW'}>
             {this.swatches}
           </View>
         )}
         {!swatchesOnly && (
-          <View style={[ss.wheel]} key={"$1"} onLayout={this.onSquareLayout}>
+          <View style={[ss.wheel]} key={'$1'} onLayout={this.onSquareLayout}>
             {this.wheelWidth > 0 && (
               <View
                 style={[
@@ -944,7 +1236,7 @@ module.exports = class ColorPicker extends Component {
                     style={[
                       ss.wheelThumb,
                       wheelThumbStyle,
-                      { pointerEvents: "none" },
+                      { pointerEvents: 'none' },
                     ]}
                   />
                   <View
@@ -952,7 +1244,7 @@ module.exports = class ColorPicker extends Component {
                     onLayout={this.onWheelLayout}
                     {...wheelPanHandlers}
                     ref={(r) => {
-                      this.wheel = r;
+                      this.wheel = r
                     }}
                   />
                 </View>
@@ -963,15 +1255,44 @@ module.exports = class ColorPicker extends Component {
         {!swatchesOnly &&
           !sliderHidden &&
           (discrete ? (
-            <View style={[ss.swatches, swatchStyle]} key={"$2"}>
+            <View style={[ss.swatches, swatchStyle]} key={'$2'}>
               {this.disc}
             </View>
           ) : (
             <>
-              <View style={[ss.slider, sliderStyle]} key={"$3"}>
+              <View style={[ss.slider, sliderStyle]} key={'$4'}>
                 <LinearGradient
-                  colors={[hex, "#000"]}
-                  style={ss.grad}
+                  colors={[hsv, '#fff']}
+                  style={[
+                    ss.grad,
+                    { transform: [{ translateX: -this.props.sliderSize / 2 }] },
+                  ]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                />
+                <Animated.View
+                  style={[
+                    ss.sliderThumb,
+                    saturationSliderThumbStyle,
+                    { pointerEvents: 'none' },
+                  ]}
+                />
+                <View
+                  style={[ss.cover]}
+                  onLayout={this.onSaturationSliderLayout}
+                  {...saturationSliderPanHandlers}
+                  ref={(r) => {
+                    this.saturationSlider = r
+                  }}
+                />
+              </View>
+              <View style={[ss.slider, sliderStyle]} key={'$3'}>
+                <LinearGradient
+                  colors={[hsv, '#000']}
+                  style={[
+                    ss.grad,
+                    { transform: [{ translateX: -this.props.sliderSize / 2 }] },
+                  ]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                 />
@@ -979,7 +1300,7 @@ module.exports = class ColorPicker extends Component {
                   style={[
                     ss.sliderThumb,
                     sliderThumbStyle,
-                    { pointerEvents: "none" },
+                    { pointerEvents: 'none' },
                   ]}
                 />
                 <View
@@ -987,21 +1308,29 @@ module.exports = class ColorPicker extends Component {
                   onLayout={this.onSliderLayout}
                   {...sliderPanHandlers}
                   ref={(r) => {
-                    this.slider = r;
+                    this.slider = r
                   }}
                 />
               </View>
-              <View style={[ss.slider, sliderStyle]} key={"$2"}>
+              <View style={[ss.slider, sliderStyle]} key={'$2'}>
                 <Image
                   style={{
-                    ...StyleSheet.absoluteFill,
-                    height: ss.slider.height,
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 100,
+                    transform: [{ translateX: -this.props.sliderSize / 2 }],
                   }}
                   source={alphaImage}
                 />
                 <LinearGradient
-                  colors={[hsv, "transparent"]}
-                  style={ss.grad}
+                  colors={[hsv, 'transparent']}
+                  style={[
+                    ss.grad,
+                    {
+                      transform: [{ translateX: -this.props.sliderSize / 2 }],
+                    },
+                  ]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                 />
@@ -1009,7 +1338,7 @@ module.exports = class ColorPicker extends Component {
                   style={[
                     ss.sliderThumb,
                     alphaSliderThumbStyle,
-                    { pointerEvents: "none" },
+                    { pointerEvents: 'none' },
                   ]}
                 />
                 <View
@@ -1017,104 +1346,100 @@ module.exports = class ColorPicker extends Component {
                   onLayout={this.onAlphaSliderLayout}
                   {...alphaSliderPanHandlers}
                   ref={(r) => {
-                    this.alphaSlider = r;
+                    this.alphaSlider = r
                   }}
                 />
               </View>
             </>
           ))}
         {swatches && swatchesLast && (
-          <View style={[ss.swatches, swatchStyle]} key={"SW"}>
+          <View style={[ss.swatches, swatchStyle]} key={'SW'}>
             {this.swatches}
           </View>
         )}
       </View>
-    );
+    )
   }
-};
+}
 
 const ss = StyleSheet.create({
   root: {
     flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    overflow: "visible",
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    overflow: 'visible',
     // aspectRatio: 1,
     // backgroundColor: '#ffcccc',
   },
   wheel: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-    overflow: "visible",
-    width: "100%",
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'visible',
+    width: '100%',
     minWidth: 200,
     minHeight: 200,
     // aspectRatio: 1,
     // backgroundColor: '#ffccff',
   },
   wheelWrap: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     // backgroundColor: '#ffffcc',
   },
   wheelImg: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     // backgroundColor: '#ffffcc',
   },
   wheelThumb: {
-    position: "absolute",
-    backgroundColor: "#EEEEEE",
+    position: 'absolute',
+    backgroundColor: '#EEEEEE',
     borderWidth: 3,
-    borderColor: "#EEEEEE",
+    borderColor: '#EEEEEE',
     elevation: 4,
-    shadowColor: "rgb(46, 48, 58)",
+    shadowColor: 'rgb(46, 48, 58)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
   cover: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     // backgroundColor: '#ccccff88',
   },
   slider: {
-    width: "100%",
+    width: '100%',
     // height: 32,
     marginTop: 16,
-    overflow: "hidden",
-    flexDirection: "column-reverse",
+    // overflow: "hidden",
+    flexDirection: 'column-reverse',
     // elevation: 4,
     // backgroundColor: '#ccccff',
   },
-  sliderImg: {
-    width: "100%",
-    height: "100%",
-  },
   sliderThumb: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     borderWidth: 2,
-    borderColor: "#EEEEEE",
+    borderColor: '#EEEEEE',
     elevation: 4,
     // backgroundColor: '#f00',
   },
   grad: {
     borderRadius: 100,
-    overflow: "hidden",
-    height: "100%",
+    // overflow: "hidden",
+    height: '100%',
   },
   swatches: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 16,
     // padding: 16,
   },
@@ -1123,16 +1448,16 @@ const ss = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     // borderWidth: 1,
-    borderColor: "#8884",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "visible",
+    borderColor: '#8884',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'visible',
   },
   swatchTouch: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: "#f004",
-    overflow: "hidden",
+    backgroundColor: '#f004',
+    // overflow: "hidden",
   },
-});
+})

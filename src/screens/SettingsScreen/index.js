@@ -1,75 +1,81 @@
-import React from "react";
+import React from 'react'
 import {
-  ScrollView,
   View,
-  Platform,
-  KeyboardAvoidingView,
   Text,
   StyleSheet,
   TextInput,
-  Button,
+  ScrollView,
+  TouchableOpacity,
   Keyboard,
-} from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { connect } from "react-redux";
+  PlatformColor,
+} from 'react-native'
+
+import DeviceInfo from 'react-native-device-info'
+import { connect } from 'react-redux'
+
+import Slider from '../../components/Slider'
+import OSCManager from '../../features/OSC/OSCManager'
 import {
   changePort,
   changeAddress,
-} from "../../features/settings/redux/settingsActions";
-import OSCManager from "../../features/OSC/OSCManager";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Slider from "../HomeScreen/components/Slider";
+} from '../../features/settings/redux/settingsActions'
+import { setData } from '../../features/settings/redux/settingsOperations'
+
+const isTablet = DeviceInfo.isTablet()
+const ScollViewWrapper = isTablet ? View : ScrollView
 
 function SettingsScreen({
   navigation,
   port,
+  setData,
   address,
   masterLevel,
   audioInputLevel,
   changePort,
   changeAddress,
 }) {
-  const [localPort, setLocalPort] = React.useState(port);
-  const [localAddress, setLocalAddress] = React.useState(address);
-
-  const portRef = React.useRef(null);
+  const localAddressRef = React.useRef(address)
+  const localPortRef = React.useRef(port)
 
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => {
         return (
-          <Button title="Save" onPress={handleSave} style={styles.button} />
-        );
+          <TouchableOpacity onPress={handleSave}>
+            <Text
+              style={{
+                marginRight: 15,
+                color: PlatformColor('systemBlueColor'),
+                fontSize: 16,
+              }}
+            >
+              Save
+            </Text>
+          </TouchableOpacity>
+        )
       },
-    });
-  }, [navigation]);
+    })
+  }, [navigation, handleSave])
 
-  function handleSave() {
-    changePort(localPort);
-    changeAddress(localAddress);
-    OSCManager.setClient(localPort, localAddress);
-    navigation.goBack();
-  }
+  const handleSave = React.useCallback(() => {
+    changePort(localPortRef.current)
+    changeAddress(localAddressRef.current)
+    OSCManager.setClient(localPortRef.current, localAddressRef.current)
+    setData().catch(console.warn)
+    navigation.goBack()
+  }, [changeAddress, setData, changePort, navigation])
 
   function onChangePortText(value) {
-    setLocalPort(value);
+    localPortRef.current = value
   }
 
   function onChangeAddressText(value) {
-    setLocalAddress(value);
-  }
-
-  function setPortRef(ref) {
-    portRef.current = ref;
-  }
-
-  function focusPortRef() {
-    portRef.current?.focus?.();
+    localAddressRef.current = value
   }
 
   function onSliderChange(e, address) {
-    Keyboard.dismiss();
-    OSCManager.sendMessage(address, [e]);
+    Keyboard.dismiss()
+    OSCManager.sendMessage(address, [e])
   }
 
   function renderSliders() {
@@ -81,111 +87,101 @@ function SettingsScreen({
         {audioInputLevel ? (
           <Slider {...audioInputLevel} onSliderChange={onSliderChange} />
         ) : null}
-        {audioInputLevel ? (
-          <Slider {...audioInputLevel} onSliderChange={onSliderChange} />
-        ) : null}
       </>
-    );
+    )
   }
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.slidersWrapper}>{renderSliders()}</View>
-      <View style={styles.textInputsContainer}>
-        <Text style={styles.warningLabel}>
-          These settings do not need to be changed
-        </Text>
-        <View style={styles.textInputContainer}>
-          <Text style={styles.label}>TouchOSC IP Address</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder="192.168.100.118"
-            value={localAddress}
-            returnKeyType="done"
-            onSubmitEditing={Keyboard.dismiss}
-            onChangeText={onChangeAddressText}
-            style={styles.textInput}
-          />
+    <View style={styles.viewWrapper}>
+      <ScollViewWrapper style={styles.scrollView}>
+        <View style={styles.slidersWrapper}>{renderSliders()}</View>
+        <View style={styles.textInputsContainer}>
+          <Text style={styles.warningLabel}>
+            These settings do not need to be changed
+          </Text>
+          <View style={styles.textInputContainer}>
+            <Text style={styles.label}>TouchOSC IP Address</Text>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="10.0.208.87"
+              returnKeyType="done"
+              defaultValue={address}
+              onSubmitEditing={Keyboard.dismiss}
+              onChangeText={onChangeAddressText}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.textInputContainer}>
+            <Text style={styles.label}>TouchOSC Input Port</Text>
+            <TextInput
+              returnKeyType="done"
+              placeholder="8010"
+              defaultValue={port}
+              onSubmitEditing={Keyboard.dismiss}
+              onChangeText={onChangePortText}
+              style={styles.textInput}
+            />
+          </View>
         </View>
-        <View style={styles.textInputContainer}>
-          <Text style={styles.label}>TouchOSC Input Port</Text>
-          <TextInput
-            ref={setPortRef}
-            returnKeyType="done"
-            value={localPort}
-            placeholder="8010"
-            onSubmitEditing={Keyboard.dismiss}
-            onChangeText={onChangePortText}
-            style={styles.textInput}
-          />
-        </View>
-      </View>
+      </ScollViewWrapper>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    flexDirection: "row",
+  scrollView: {
+    flexDirection: isTablet ? 'row' : 'column',
     padding: 15,
     margin: 15,
+    marginBottom: isTablet ? 0 : 35,
     borderRadius: 8,
-    backgroundColor: "#121212",
+    backgroundColor: '#121212',
+  },
+  viewWrapper: {
+    flex: 1,
+  },
+  slidersWrapper: {
+    flex: 1,
+    maxWidth: 500,
+    marginBottom: 15,
   },
   warningLabel: {
-    color: "#ff6700",
-    fontWeight: "bold",
+    color: '#ff6700',
+    fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 15,
   },
   label: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-  },
-  slidersWrapper: {
-    width: "50%",
-  },
-  scrollViewContainer: {
-    flex: 1,
-    padding: 15,
-    flexDirection: "row",
-    backgroundColor: "#000",
   },
   textInput: {
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginTop: 5,
-    alignSelf: "center",
+    alignSelf: 'center',
     borderRadius: 5,
-    backgroundColor: "#181818",
-    color: "#fff",
-    width: "100%",
+    backgroundColor: '#181818',
+    color: '#fff',
+    width: '100%',
     fontSize: 16,
   },
   textInputContainer: {
-    width: "100%",
     marginBottom: 15,
   },
   textInputsContainer: {
-    flex: 1,
-    marginLeft: 15,
-    alignSelf: "flex-start",
+    flex: isTablet ? undefined : 1,
+    marginLeft: isTablet ? 15 : undefined,
+    alignSelf: isTablet ? 'flex-start' : undefined,
     paddingHorizontal: 15,
     paddingTop: 15,
     paddingBottom: 0,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "#ff6700",
+    borderColor: '#ff6700',
   },
-  button: {
-    backgroundColor: "#fff",
-    width: "100%",
-    height: 100,
-    alignSelf: "flex-end",
-  },
-});
+})
 
 function mapStateToProps({ settings }) {
   return {
@@ -193,12 +189,13 @@ function mapStateToProps({ settings }) {
     masterLevel: settings?.masterLevel,
     audioInputLevel: settings?.audioInputLevel,
     address: settings?.address,
-  };
+  }
 }
 
 const mapDispatchToProps = {
   changePort,
   changeAddress,
-};
+  setData,
+}
 
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen)

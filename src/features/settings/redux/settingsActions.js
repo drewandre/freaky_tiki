@@ -7,37 +7,54 @@ import {
   SET_CURRENT_ANIMATION,
   SET_CURRENT_PALETTE,
   SET_PARAM_VALUE,
-} from "./settingsTypes";
+  ADD_COLOR_PALETTE,
+  EDIT_COLOR_PALETTE,
+} from './settingsTypes'
 
 const disallowedMedias = [
-  "FaceTime_HD_Camera_(Built-in)",
-  "TestCard",
-  "Video-Output-1",
-  "next",
-  "per_type_selection",
-  "previous",
-  "select",
-  "select_by_name",
-];
+  'FaceTime_HD_Camera_(Built-in)',
+  'TestCard',
+  'Video-Output-1',
+  'next',
+  'per_type_selection',
+  'previous',
+  'select',
+  'select_by_name',
+]
 
 export function changePort(port) {
   return {
     type: CHANGE_PORT,
     payload: port,
-  };
+  }
+}
+
+export function addColorPalette(payload) {
+  console.log(payload)
+  return {
+    type: ADD_COLOR_PALETTE,
+    payload,
+  }
+}
+
+export function editColorPalette(payload) {
+  return {
+    type: EDIT_COLOR_PALETTE,
+    payload,
+  }
 }
 
 export function changeAddress(address) {
   return {
     type: CHANGE_ADDRESS,
     payload: address,
-  };
+  }
 }
 
 export function setDataBegin() {
   return {
     type: SET_DATA_BEGIN,
-  };
+  }
 }
 
 export function setDataSuccess(data = {}) {
@@ -109,32 +126,32 @@ export function setDataSuccess(data = {}) {
           },
         },
       },
+      medias: { CONTENTS: medias },
     },
-  } = data;
-  const newMedias = {};
-  const medias = data.CONTENTS.medias.CONTENTS;
+  } = data
+  const newMedias = {}
   for (var media in medias) {
-    if (disallowedMedias.includes(media) || media.includes("Camera")) {
-      delete medias[media];
+    if (disallowedMedias.includes(media) || media.includes('Camera')) {
+      delete medias[media]
     } else {
-      newMedias[media] = medias[media].CONTENTS.Public || {};
+      newMedias[media] = medias[media].CONTENTS.Public || {}
     }
   }
 
-  const cuesArr = new Array(16).fill({});
-  let index = 0;
+  const cuesArr = new Array(16).fill({})
+  let index = 0
   for (var cue in cues) {
-    const obj = cues[cue];
+    const obj = cues[cue]
     if (newMedias[cue]) {
-      obj.PARAMS = [];
+      obj.PARAMS = []
       for (var param in newMedias[cue].CONTENTS) {
-        obj.PARAMS.push(newMedias[cue].CONTENTS[param]);
+        obj.PARAMS.push(newMedias[cue].CONTENTS[param])
       }
     } else {
-      console.log(`${cue} did not have a media`);
+      // console.log(`${cue} did not have a media`)
     }
-    cuesArr[index] = obj;
-    index++;
+    cuesArr[index] = obj
+    index++
   }
   return {
     type: SET_DATA_SUCCESS,
@@ -144,36 +161,36 @@ export function setDataSuccess(data = {}) {
       audio_input_level,
       master_level: {
         ...master_level,
-        DESCRIPTION: "Brightness Level",
+        DESCRIPTION: 'Brightness Level',
       },
     },
-  };
+  }
 }
 
 export function setDataError(message) {
   return {
     type: SET_DATA_ERROR,
     payload: message,
-  };
+  }
 }
 
 export function setCurrentAnimation(cue) {
   return {
     type: SET_CURRENT_ANIMATION,
     payload: cue,
-  };
+  }
 }
 
 export function setCurrentPalette(palette) {
   return {
     type: SET_CURRENT_PALETTE,
     payload: palette,
-  };
+  }
 }
 
 export function setParamValue(address, value) {
   return {
     type: SET_PARAM_VALUE,
     payload: { address, value },
-  };
+  }
 }

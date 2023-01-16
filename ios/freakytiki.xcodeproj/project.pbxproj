@@ -323,10 +323,12 @@
 			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-freakytiki.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -345,12 +347,13 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE_SPECIFIER = "match Development com.freaky-tiki";
+				PROVISIONING_PROFILE = "7219f80a-df64-405e-b06d-8288c7971116";
+				PROVISIONING_PROFILE_SPECIFIER = freakytikiDevelopment;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -363,11 +366,14 @@
 			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-freakytiki.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M4TG59ZPV5;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ULR6Y55H26;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				INFOPLIST_FILE = freakytiki/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Tiki;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -380,11 +386,14 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
+				PROVISIONING_PROFILE = "61e1f793-ab80-4785-a20d-841431a2a363";
+				PROVISIONING_PROFILE_SPECIFIER = freakytikiRelease;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiRelease;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

@@ -1,0 +1,80 @@
+{
+  "extends": [
+    "@react-native-community",
+    "plugin:import/recommended"
+  ],
+  "rules": {
+    "semi": "off",
+    "comma-dangle": "off",
+    "react-native/no-unused-styles": "error",
+    "import/prefer-default-export": "off",
+    "import/exports-last": "error",
+    "no-shadow": "off",
+    "no-labels": "error",
+    "arrow-parens": "error",
+    "radix": "off",
+    "no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "lines-between-class-members": "warn",
+    "arrow-body-style": [
+      "error",
+      "always"
+    ],
+    "unused-imports/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          [
+            "parent",
+            "sibling"
+          ]
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react+(|-native)",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": [
+          "react"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  },
+  "settings": {
+    "import/ignore": [
+      // these modules use modules.exports which eslint-import does not support
+      /react-native/
+    ],
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".json", ".ts", ".tsx"],
+        "paths": [
+          "src"
+        ]
+      }
+    }
+  },
+  "plugins": [
+    "prettier",
+    "unused-imports"
+  ]
+}

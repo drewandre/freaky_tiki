@@ -1,0 +1,372 @@
+# https://docs.fastlane.tools/advanced/Fastfile/#using-fastlane_require
+fastlane_require 'dotenv'
+import 'helpers.rb'
+
+XCODEPROJ = 'ios/freakytiki.xcodeproj'
+XCODEWORKSPACE = 'ios/freakytiki.xcworkspace'
+IOS_BUILD_OUTPUT_DIRECTORY = './ios_build'
+IOS_ARCHIVE_OUTPUT_DIRECTORY = './ios_build/ios_archive'
+ANDROID_BUILD_OUTPUT_DIRECTORY = '../android_build'
+PLIST_PATH = 'freakytiki/Info.plist'
+RICH_PUSH_PLIST_PATH = 'rich_push/Info.plist'
+
+PODFILE_PATH = 'ios/Podfile'
+ENTITLEMENTS_PATH = 'freakytiki/freakytiki.entitlements'
+ICON_PATH = 'fastlane/metadata/app_icon.png'
+GRADLE_FILE_PATH = './android/app/build.gradle'
+METADATA_PATH = 'fastlane/metadata'
+SUPPLY_JSON_KEY_PATH = 'fastlane/supply_key.json'
+ANDROID_RELEASE_NOTES_PATH = 'fastlane/metadata/android/en-US/changelogs/default.txt'
+ANDROID_NOTIFICATION_ICON_FILENAME = 'ic_notification'
+ANDROID_STAT_ICON_FILENAME = 'ic_stat_name'
+ANDROID_APP_ICON_MIPMAP_PATH = './android/app/src/main/res/mipmap'
+ANDROID_APP_ICON_DRAWABLE_PATH = './android/app/src/main/res/drawable'
+ANDROID_APP_ICON_GLOB_PATH = "/android/app/src/**/res/{mipmap,drawable}-*/{ic_launcher,ic_launcher_round,ic_notification,ic_notification_round,ic_stat_name,ic_stat_name_round}.{png,PNG}"
+IOS_APP_ICON_GLOB_PATH = '/ios/freakytiki/Images.xcassets/AppIcon.appiconset/*.{png,PNG}'
+IOS_APP_ICON_SET_PATH = 'ios/freakytiki/Images.xcassets'
+APPSTORE_CONNECT_API_KEY_PATH = 'fastlane/AuthKey_8D33ZHR76G.p8'
+PRIMARY_TARGET = 'freakytiki'
+RICH_PUSH_TARGET = 'rich_push'
+
+BUILD_NUMBER_INCREMENT = 1
+
+FORCE_MATCH = true
+
+# Google::Apis.logger.level = Logger::DEBUG
+# ENV["VERBOSE"] = "true"
+
+platform :ios do
+  desc 'New build for iOS App Store'
+  
+  before_all do |lane, options|
+    if (!["dev", "dev2", "staging", "prod"].include?(options[:target]))
+      UI.user_error!('You must supply a valid target environment when running fastlane ("dev", "dev2", "staging", or "prod"). Example: fastlane ios build target:dev')
+    end
+
+    if is_ci?
+      UI.message("Skipping env file load in CI (github actions injects all secrets into ENV)")
+    else
+      case options[:target]
+        when "dev2"
+          Dotenv.load('../.env.development_2')
+          UI.success('Loaded .env.development_2')
+        when "dev"
+          Dotenv.load('../.env.development')
+          UI.success('Loaded .env.development')
+        when "staging"
+          Dotenv.load('../.env.staging')
+          UI.success('Loaded .env.staging')
+        when "prod"
+          Dotenv.load('../.env.production')
+          UI.success('Loaded .env.production')
+      end
+    end
+  end
+
+  lane :register_account_devices do |options|
+    app_store_connect_api_key(
+      key_id: "#{ENV["APPSTORE_CONNECT_API_KEY_ID"]}",
+      issuer_id: "#{ENV["APPSTORE_CONNECT_API_ISSUER_ID"]}",
+      key_filepath: APPSTORE_CONNECT_API_KEY_PATH,
+      in_house: false,
+    )
+
+    # https://docs.fastlane.tools/actions/register_devices/
+    register_devices(
+      devices_file: "./fastlane_registered_devices.txt",
+      api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+    )
+  end
+
+  lane :config do |options|
+    app_store_connect_api_key(
+      key_id: "#{ENV["APPSTORE_CONNECT_API_KEY_ID"]}",
+      issuer_id: "#{ENV["APPSTORE_CONNECT_API_ISSUER_ID"]}",
+      key_filepath: APPSTORE_CONNECT_API_KEY_PATH,
+      in_house: false,
+    )
+
+    if is_ci?
+      # Initialize keychain and logging for CI builds: https://docs.fastlane.tools/actions/setup_ci/
+      setup_ci
+    else
+      # https://docs.fastlane.tools/actions/register_devices/
+      register_account_devices(
+        devices_file: "./fastlane_registered_devices.txt",
+        api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+      )
+    end
+
+    # Ensure app ID matches Appfile configuration: https://docs.fastlane.tools/actions/update_app_identifier/
+    update_app_identifier(
+      xcodeproj: XCODEPROJ,
+      plist_path: PLIST_PATH,
+      app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
+    )
+
+    # Update Facebook analytics IDs and app display name: (MODIFIED) https://docs.fastlane.tools/actions/update_info_plist/
+    # This action is located in fastlane/actions/update_plist_file. Fastlane's update_info_plist didn't quite work for us
+    # since we also want to update the entitlements file (also a .plist file) which fastlane doesn't support oddly enough
+    update_plist_file(
+      xcodeproj: XCODEPROJ,
+      plist_path: PLIST_PATH,
+      block: proc do |plist|
+        plist["CFBundleDisplayName"] = "#{ENV["APP_DISPLAY_NAME"]}"
+        UI.success("CFBundleDisplayName change to #{plist["CFBundleDisplayName"]}")
+      end
+    )
+  
+    # Update associated domains (same custom update_plist_file action - see note above)
+    update_plist_file(
+      xcodeproj: XCODEPROJ,
+      plist_path: ENTITLEMENTS_PATH,
+      block: proc do |entitlements|
+        entitlements["com.apple.developer.associated-domains"] = [
+          "applinks:#{ENV["PRIMARY_ASSOCIATED_DOMAIN"]}",
+        ]
+        UI.success("Associated Domains change to #{entitlements["com.apple.developer.associated-domains"]}")
+      end
+    )
+
+    update_project_team(
+      path: XCODEPROJ,
+      teamid: "ULR6Y55H26" # developer portal team id
+    )
+
+    # https://docs.fastlane.tools/actions/match/
+    match(
+      force: FORCE_MATCH,
+      force_for_new_devices: true,
+      type: "appstore",
+      readonly: is_ci?,
+      output_path: IOS_BUILD_OUTPUT_DIRECTORY,
+      generate_apple_certs: true,
+      profile_name: returniOSOutputNameForTargetEnv(options[:target], 'Release'),
+      app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
+      git_url: "#{ENV["MATCH_GIT_URL"]}"
+    )
+
+    # https://docs.fastlane.tools/actions/match/
+    match(
+      force: FORCE_MATCH,
+      force_for_new_devices: true,
+      type: "adhoc",
+      readonly: is_ci?,
+      output_path: IOS_BUILD_OUTPUT_DIRECTORY,
+      generate_apple_certs: true,
+      profile_name: returniOSOutputNameForTargetEnv(options[:target], 'Adhoc'),
+      app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
+      git_url: "#{ENV["MATCH_GIT_URL"]}"
+    )
+
+    # https://docs.fastlane.tools/actions/match/
+    match(
+      force: FORCE_MATCH,
+      force_for_new_devices: true,
+      type: "development",
+      readonly: is_ci?,
+      output_path: IOS_BUILD_OUTPUT_DIRECTORY,
+      generate_apple_certs: true,
+      profile_name: returniOSOutputNameForTargetEnv(options[:target], 'Development'),
+      app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
+      git_url: "#{ENV["MATCH_GIT_URL"]}"
+    )
+
+    # https://docs.fastlane.tools/actions/update_project_provisioning/
+    update_project_provisioning(
+      xcodeproj: XCODEPROJ,
+      profile: ENV["sigh_#{ENV["FASTLANE_APP_IDENTIFIER"]}_development_profile-path"],
+      build_configuration: 'Debug',
+      code_signing_identity: "iPhone Development",
+      target_filter: PRIMARY_TARGET,
+    )
+
+    # https://docs.fastlane.tools/actions/update_project_provisioning/
+    update_project_provisioning(
+      xcodeproj: XCODEPROJ,
+      profile: ENV["sigh_#{ENV["FASTLANE_APP_IDENTIFIER"]}_appstore_profile-path"],
+      build_configuration: 'Release',
+      code_signing_identity: "iPhone Distribution",
+      target_filter: PRIMARY_TARGET,
+    )
+
+    UI.success("Successfully configured app for iOS #{options[:target]} target.")
+  end
+  
+  lane :icons do |options|
+    # Generate app icons: https://github.com/KrauseFx/fastlane-plugin-appicon
+    appicon(
+      appicon_image_file: ICON_PATH,
+      appicon_devices: [:ipad, :iphone, :ios_marketing],
+      appicon_path: IOS_APP_ICON_SET_PATH
+    )
+  end
+
+  lane :build do |options|
+    app_store_connect_api_key(
+      key_id: "#{ENV["APPSTORE_CONNECT_API_KEY_ID"]}",
+      issuer_id: "#{ENV["APPSTORE_CONNECT_API_ISSUER_ID"]}",
+      key_filepath: APPSTORE_CONNECT_API_KEY_PATH,
+      in_house: false,
+    )
+
+    # node modules are cached and/or installed via github actions build script
+    # if is_ci?
+    #   UI.message("Skipping npm install in ci because github actions does this for us.")
+    # else
+    #   sh("rm -rf node_modules && npm install --legacy-peer-deps")
+    # end
+
+    # https://docs.fastlane.tools/actions/cocoapods/
+    # pods are cached and/or installed via github actions build script
+    # if is_ci?
+    #   cocoapods(podfile: PODFILE_PATH)
+    # else
+    #   Dir.chdir("..") do
+    #     sh("cd ios && rm -rf Pods && pod install")
+    #   end
+    # end
+
+    # https://docs.fastlane.tools/actions/get_version_number/
+    get_version_number(
+      xcodeproj: XCODEPROJ,
+      target: PRIMARY_TARGET,
+    )
+
+    # https://docs.fastlane.tools/actions/increment_version_number/
+    increment_version_number(
+      xcodeproj: XCODEPROJ,
+      version_number: lane_context[SharedValues::VERSION_NUMBER]
+    )
+
+    # https://docs.fastlane.tools/actions/get_build_number/
+    get_build_number(xcodeproj: XCODEPROJ)
+
+    # https://docs.fastlane.tools/actions/app_store_build_number/
+    PREV_LIVE_BUILD_NUMBER = app_store_build_number(
+      api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+      live: options[:target] == 'prod',
+      initial_build_number: 1,
+      version: lane_context[SharedValues::VERSION_NUMBER]
+    )
+
+    # https://docs.fastlane.tools/actions/app_store_build_number/
+    app_store_build_number(
+      api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+      live: false,
+      initial_build_number: PREV_LIVE_BUILD_NUMBER,
+      version: lane_context[SharedValues::VERSION_NUMBER]
+    )
+
+    # Detect if we are publishing a build with build number lower or equal to highest build number on testflight,
+    # and set local build number to the remote build number if that is the case
+    if (lane_context[SharedValues::BUILD_NUMBER].to_i <= lane_context[SharedValues::LATEST_BUILD_NUMBER])
+      UI.important("Build number (#{lane_context[SharedValues::BUILD_NUMBER]}) in Info.plist is #{lane_context[SharedValues::BUILD_NUMBER].to_i === lane_context[SharedValues::LATEST_BUILD_NUMBER].to_i ? "equal to" : "lower than"} the highest #{options[:target]} build number (#{lane_context[SharedValues::LATEST_BUILD_NUMBER].to_i}). Incrementing build number to #{lane_context[SharedValues::LATEST_BUILD_NUMBER] + BUILD_NUMBER_INCREMENT}.")
+
+      # https://docs.fastlane.tools/actions/increment_build_number/
+      increment_build_number(
+        xcodeproj: XCODEPROJ,
+        build_number: lane_context[SharedValues::LATEST_BUILD_NUMBER] + BUILD_NUMBER_INCREMENT
+      )
+    end
+
+    # Generate app icons: https://github.com/KrauseFx/fastlane-plugin-appicon
+    appicon(
+      appicon_image_file: ICON_PATH,
+      appicon_devices: [:ipad, :iphone, :ios_marketing],
+      appicon_path: IOS_APP_ICON_SET_PATH
+    )
+
+    # Generate clean build output directory
+    sh("rm -rf #{IOS_BUILD_OUTPUT_DIRECTORY}; mkdir -p #{IOS_BUILD_OUTPUT_DIRECTORY};")
+
+    # Inject certs, switch bundle identifiers, entitlements config, etc
+    config(options)
+
+    # https://docs.fastlane.tools/actions/build_ios_app/
+    build_ios_app(
+      workspace: XCODEWORKSPACE,
+      export_method: "app-store",  
+      clean: true,
+      silent: true,
+      include_symbols: true,
+      include_bitcode: true,
+      build_path: IOS_BUILD_OUTPUT_DIRECTORY,
+      # derived_data_path: IOS_BUILD_OUTPUT_DIRECTORY,
+      # archive_path: IOS_ARCHIVE_OUTPUT_DIRECTORY,
+      output_directory: IOS_BUILD_OUTPUT_DIRECTORY,
+      output_name: returniOSOutputNameForTargetEnv(options[:target], 'Release'),
+      scheme: returniOSSchemeForTargetEnv(options[:target]),
+    )
+
+    # list contents of ios build output directory
+    sh("ls #{IOS_BUILD_OUTPUT_DIRECTORY}")
+
+    UI.success("Successfully built iOS app #{options[:target]} v#{lane_context[SharedValues::VERSION_NUMBER]} build ##{lane_context[SharedValues::BUILD_NUMBER]}.")
+  end
+
+  lane :deploy do |options|
+    app_store_connect_api_key(
+      key_id: "#{ENV["APPSTORE_CONNECT_API_KEY_ID"]}",
+      issuer_id: "#{ENV["APPSTORE_CONNECT_API_ISSUER_ID"]}",
+      key_filepath: APPSTORE_CONNECT_API_KEY_PATH,
+      in_house: false,
+    )
+
+    # https://docs.fastlane.tools/actions/get_version_number/
+    get_version_number(
+      xcodeproj: XCODEPROJ,
+      target: PRIMARY_TARGET,
+    )
+
+    # https://docs.fastlane.tools/actions/get_build_number/
+    get_build_number(xcodeproj: XCODEPROJ)
+
+    groups = []
+    version_array = "#{lane_context[SharedValues::VERSION_NUMBER]}".split('.')
+    file_path = "./internal_release_notes/#{version_array[0]}_#{version_array[1]}_#{version_array[2]}.txt"
+    if !File.file?(file_path)
+      UI.user_error!("You must supply internal release notes in the fastlane/internal_release_notes folder for production releases. For version 1.0.0, the filename would be 1_0_0.txt.")
+    end
+    file = File.open(file_path)
+    changelog = file.read
+    file.close
+
+    # https://docs.fastlane.tools/actions/upload_to_testflight/
+    upload_to_testflight(
+      reject_build_waiting_for_review: true,
+      skip_waiting_for_build_processing: options[:target] != 'prod',
+      distribute_external: options[:target] == 'prod',
+      changelog: options[:target] == 'prod' ? changelog : nil,
+      groups: options[:target] == 'prod' ? groups : nil,
+      ipa: "#{IOS_BUILD_OUTPUT_DIRECTORY}/#{returniOSOutputNameForTargetEnv(options[:target], 'Release')}.ipa"
+    )
+
+    UI.success(message)
+  end
+
+  lane :refresh_dsyms do |options|
+    if (!options[:version])
+      UI.user_error!('You must supply a valid version when running the refresh_dsyms lane. Example: fastlane ios refresh_dsyms target:dev version:3.7.2')
+    end
+    app_store_connect_api_key(
+      key_id: "#{ENV["APPSTORE_CONNECT_API_KEY_ID"]}",
+      issuer_id: "#{ENV["APPSTORE_CONNECT_API_ISSUER_ID"]}",
+      key_filepath: APPSTORE_CONNECT_API_KEY_PATH,
+      in_house: false,
+    )
+
+    download_dsyms(
+      version: options[:version],
+      app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
+      api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+    )
+
+    clean_build_artifacts
+  end
+end
+
+# Called if lane was not executed successfully
+# error do |lane, exception|
+#   notification(message: "Failed to upload")
+# end
