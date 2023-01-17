@@ -16,7 +16,7 @@ function HomeScreen({}) {
       .then(() => {
         ScreenOrientation.getOrientationAsync()
           .then((result) => {
-            console.log('initial orientation', result)
+            // console.log('initial orientation', result)
             setOrientation(result)
           })
           .catch((error) => {

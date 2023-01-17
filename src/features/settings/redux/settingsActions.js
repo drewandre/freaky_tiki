@@ -1,3 +1,4 @@
+import OSCManager from '../../OSC/OSCManager'
 import {
   CHANGE_PORT,
   CHANGE_ADDRESS,
@@ -9,6 +10,7 @@ import {
   SET_PARAM_VALUE,
   ADD_COLOR_PALETTE,
   EDIT_COLOR_PALETTE,
+  SET_ENABLED,
 } from './settingsTypes'
 
 const disallowedMedias = [
@@ -30,8 +32,15 @@ export function changePort(port) {
   }
 }
 
+export function setEnabled(bool) {
+  OSCManager.sendMessage('/master/master_level_OSC', [bool ? 0.5 : 0])
+  return {
+    type: SET_ENABLED,
+    payload: bool,
+  }
+}
+
 export function addColorPalette(payload) {
-  console.log(payload)
   return {
     type: ADD_COLOR_PALETTE,
     payload,
@@ -105,7 +114,7 @@ export function setDataSuccess(data = {}) {
         CONTENTS: {
           main: {
             CONTENTS: {
-              cues: {
+              scenes: {
                 CONTENTS: {
                   by_name: {
                     CONTENTS: cues,

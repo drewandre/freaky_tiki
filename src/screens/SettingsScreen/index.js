@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Keyboard,
   PlatformColor,
+  ActivityIndicator,
 } from 'react-native'
 
 import DeviceInfo from 'react-native-device-info'
@@ -30,7 +31,7 @@ function SettingsScreen({
   setData,
   address,
   masterLevel,
-  audioInputLevel,
+  loading,
   changePort,
   changeAddress,
 }) {
@@ -75,18 +76,15 @@ function SettingsScreen({
 
   function onSliderChange(e, address) {
     Keyboard.dismiss()
-    OSCManager.sendMessage(address, [e])
+    OSCManager.sendMessage(`${address}_OSC`, [e])
   }
 
   function renderSliders() {
     return (
       <>
-        {masterLevel ? (
+        {masterLevel === undefined ? null : (
           <Slider {...masterLevel} onSliderChange={onSliderChange} />
-        ) : null}
-        {audioInputLevel ? (
-          <Slider {...audioInputLevel} onSliderChange={onSliderChange} />
-        ) : null}
+        )}
       </>
     )
   }
@@ -94,7 +92,31 @@ function SettingsScreen({
   return (
     <View style={styles.viewWrapper}>
       <ScollViewWrapper style={styles.scrollView}>
-        <View style={styles.slidersWrapper}>{renderSliders()}</View>
+        <View style={{ flex: 1 }}>
+          <View style={styles.slidersWrapper}>{renderSliders()}</View>
+          <TouchableOpacity
+            onPress={setData}
+            disabled={loading}
+            style={{
+              maxWidth: isTablet ? 300 : undefined,
+              opacity: loading ? 0.5 : 1,
+              marginBottom: 15,
+              borderRadius: 8,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 50,
+              backgroundColor: '#fff',
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator style={{ width: 30, marginRight: 15 }} />
+            ) : (
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+                Refresh Data
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
         <View style={styles.textInputsContainer}>
           <Text style={styles.warningLabel}>
             These settings should not need to be changed
@@ -143,8 +165,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   slidersWrapper: {
-    flex: 1,
-    maxWidth: 500,
+    maxWidth: isTablet ? 300 : undefined,
     marginBottom: 15,
   },
   warningLabel: {
@@ -190,6 +211,7 @@ const styles = StyleSheet.create({
 function mapStateToProps({ settings }) {
   return {
     port: settings?.port,
+    loading: settings?.loading,
     masterLevel: settings?.masterLevel,
     audioInputLevel: settings?.audioInputLevel,
     address: settings?.address,

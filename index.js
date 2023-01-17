@@ -15,13 +15,7 @@ import thunk from 'redux-thunk'
 import App from './src/App'
 import settings from './src/features/settings/redux/settingsReducer'
 
-SplashScreen.preventAutoHideAsync()
-  .then((result) => {
-    return console.log(
-      `SplashScreen.preventAutoHideAsync() succeeded: ${result}`
-    )
-  })
-  .catch(console.warn)
+SplashScreen.preventAutoHideAsync().catch(console.warn)
 
 const rootReducer = combineReducers({
   settings,

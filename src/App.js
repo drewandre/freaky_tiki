@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Linking,
   ScrollView,
+  Switch,
 } from 'react-native'
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -27,6 +28,7 @@ import { connect } from 'react-redux'
 import Animations from './components/Animations'
 import Palettes from './components/Palettes'
 import OSCManager from './features/OSC/OSCManager'
+import { setEnabled } from './features/settings/redux/settingsActions'
 import { setData } from './features/settings/redux/settingsOperations'
 import ColorPaletteScreen from './screens/ColorPaletteScreen'
 import HomeScreen from './screens/HomeScreen'
@@ -53,6 +55,8 @@ function App({
   setData,
   loading,
   error,
+  enabled,
+  setEnabled,
   currentAnimation,
   currentPalette,
 }) {
@@ -84,6 +88,9 @@ function App({
       navigationRef.navigate('Settings')
     }
   }, [])
+  const toggleEnabled = React.useCallback(() => {
+    setEnabled(!enabled)
+  }, [setEnabled, enabled])
   const connectionText = React.useMemo(() => {
     return (
       <View
@@ -93,21 +100,27 @@ function App({
           marginRight: 15,
         }}
       >
-        <View
-          style={{
-            marginRight: 7,
-            width: 10,
-            height: 10,
-            borderRadius: 100,
-            backgroundColor: loading ? 'orange' : error ? 'red' : 'green',
-          }}
-        />
-        <Text style={{ color: '#fff' }}>
-          {loading ? 'Refreshing...' : error ? 'Disconnected' : 'Connected'}
-        </Text>
+        {loading || error ? (
+          <>
+            <View
+              style={{
+                marginRight: 7,
+                width: 10,
+                height: 10,
+                borderRadius: 100,
+                backgroundColor: loading ? 'orange' : error ? 'red' : 'green',
+              }}
+            />
+            <Text style={{ color: '#fff' }}>
+              {loading ? 'Refreshing...' : error ? 'Disconnected' : 'Connected'}
+            </Text>
+          </>
+        ) : (
+          <Switch value={enabled} onValueChange={toggleEnabled} />
+        )}
       </View>
     )
-  }, [loading, error])
+  }, [loading, enabled, error, toggleEnabled])
   function defaultHomeScreenOptions(navigation) {
     return {
       tabBarLabelStyle: {
@@ -126,38 +139,18 @@ function App({
           />
         )
       },
-      headerLeft: () => {
-        if (isTablet) {
-          return null
-        } else {
-          return <View style={{ marginLeft: 15 }}>{connectionText}</View>
-        }
-      },
       headerRight: () => {
+        return connectionText
+      },
+      headerLeft: () => {
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {isTablet ? connectionText : null}
-            {loading ? (
-              <ActivityIndicator style={{ width: 30, marginRight: 15 }} />
-            ) : (
-              <TouchableOpacity
-                onPress={setData}
-                style={{
-                  marginRight: 15,
-                }}
-              >
-                <Image
-                  source={require('./assets/refresh.png')}
-                  style={{ width: 30, height: 30 }}
-                />
-              </TouchableOpacity>
-            )}
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Settings')
               }}
               style={{
-                marginRight: 15,
+                marginLeft: 15,
               }}
             >
               <Image
@@ -276,7 +269,7 @@ function App({
                 return (
                   <Footer.Navigator>
                     <Footer.Screen
-                      name="Animations"
+                      name="Presets"
                       component={Animations}
                       options={({ navigation }) => {
                         return {
@@ -422,6 +415,7 @@ const styles = StyleSheet.create({
   },
   innerErrorContainer: {
     overflow: 'hidden',
+    marginHorizontal: 15,
     maxHeight: isTablet ? '60%' : '80%',
     maxWidth: isTablet ? '50%' : undefined,
     backgroundColor: '#121212',
@@ -448,10 +442,12 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = {
   setData,
+  setEnabled,
 }
 
 function mapStateToProps({ settings }) {
   return {
+    enabled: settings?.enabled,
     error: settings?.error,
     loading: settings?.loading,
     port: settings?.port,

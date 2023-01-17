@@ -117,7 +117,7 @@ function Animations({
       <StatusBar style="light" />
       <View style={{ ...styles.innerContainer, flex: 1.5 }}>
         <View style={styles.sectionHeaderContainer}>
-          <Text style={styles.sectionHeader}>Animations</Text>
+          <Text style={styles.sectionHeader}>Presets</Text>
           {SHOW_PLAY_OPTIONS ? (
             <View style={styles.iconContainer}>
               <TouchableOpacity

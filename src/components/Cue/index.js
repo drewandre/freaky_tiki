@@ -17,6 +17,8 @@ import OSCManager from '../../features/OSC/OSCManager'
 import { setCurrentAnimation } from '../../features/settings/redux/settingsActions'
 
 function Cue({ setCurrentAnimation, currentAnimation, data }) {
+  const id = data?.FULL_PATH?.toLowerCase?.() || ''
+
   function handlePress() {
     OSCManager.sendMessage(data.FULL_PATH, [])
     LayoutAnimation.configureNext({
@@ -121,12 +123,13 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
       borderRadius: 4,
       // borderRadius: 8,
       width: `${cueTimingProgress.value}%`,
-      backgroundColor: 'rgba(255,255,255,0.5)',
+      backgroundColor: id.includes('preshow')
+        ? 'rgba(0,0,0,0.5)'
+        : 'rgba(255,255,255,0.5)',
     }
   })
 
   const thumbnail = React.useMemo(() => {
-    const id = data?.FULL_PATH?.toLowerCase?.() || ''
     if (id.includes('sparkle')) {
       return (
         <Image
@@ -141,6 +144,13 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
           style={styles.imageBackground}
         />
       )
+    } else if (id.includes('preshow')) {
+      return (
+        <Image
+          source={require('../../assets/solid_thumbnail.png')}
+          style={styles.imageBackground}
+        />
+      )
     } else {
       return (
         <Image
@@ -149,7 +159,7 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
         />
       )
     }
-  }, [data?.FULL_PATH])
+  }, [id])
 
   return (
     <TapGestureHandler
@@ -161,7 +171,14 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
     >
       <Animated.View style={animatedStyles}>
         {data?.FULL_PATH ? thumbnail : <View style={styles.imageBackground} />}
-        <Text style={styles.text}>{data.DESCRIPTION}</Text>
+        <Text
+          style={{
+            ...styles.text,
+            color: id.includes('preshow') ? '#000' : '#fff',
+          }}
+        >
+          {data.DESCRIPTION}
+        </Text>
         <Animated.View style={animatedCueTimingStyles} />
         {data?.FULL_PATH ? (
           <Animated.View style={animatedBottomBorderStyles} />
