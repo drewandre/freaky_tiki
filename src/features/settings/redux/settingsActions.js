@@ -11,6 +11,7 @@ import {
   ADD_COLOR_PALETTE,
   EDIT_COLOR_PALETTE,
   SET_ENABLED,
+  SET_AUDIO_INPUT_LEVEL,
 } from './settingsTypes'
 
 const disallowedMedias = [
@@ -33,7 +34,7 @@ export function changePort(port) {
 }
 
 export function setEnabled(bool) {
-  OSCManager.sendMessage('/master/master_level_OSC', [bool ? 0.5 : 0])
+  OSCManager.sendMessage('/master/master_level_OSC', [bool ? 1 : 0])
   return {
     type: SET_ENABLED,
     payload: bool,
@@ -188,6 +189,15 @@ export function setCurrentAnimation(cue) {
   return {
     type: SET_CURRENT_ANIMATION,
     payload: cue,
+  }
+}
+
+export function setAudioInputLevel(val) {
+  console.log('sending', val)
+  OSCManager.sendMessage('/master/audio_input_level', [val])
+  return {
+    type: SET_AUDIO_INPUT_LEVEL,
+    payload: val,
   }
 }
 

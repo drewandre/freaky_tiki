@@ -11,6 +11,8 @@ import {
   ADD_COLOR_PALETTE,
   EDIT_COLOR_PALETTE,
   SET_CURRENT_PALETTE,
+  SET_ENABLED,
+  SET_AUDIO_INPUT_LEVEL,
 } from './settingsTypes'
 
 const INITIAL_STATE = {
@@ -38,6 +40,10 @@ export default produce((draft, action) => {
     case SET_CURRENT_PALETTE:
       draft.currentPalette = action.payload
       return draft
+    case SET_ENABLED:
+      draft.enabled = action.payload
+      draft.masterLevel.VALUE = action.payload ? [1] : [0]
+      return draft
     case ADD_COLOR_PALETTE:
       draft.palettes.push(action.payload)
       return draft
@@ -50,6 +56,9 @@ export default produce((draft, action) => {
       } else {
         draft.palettes[paletteIndex] = action.payload
       }
+      return draft
+    case SET_AUDIO_INPUT_LEVEL:
+      draft.audioInputLevel.VALUE = [action.payload]
       return draft
     case SET_DATA_BEGIN:
       draft.loading = true

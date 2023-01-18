@@ -28,7 +28,10 @@ import { connect } from 'react-redux'
 import Animations from './components/Animations'
 import Palettes from './components/Palettes'
 import OSCManager from './features/OSC/OSCManager'
-import { setEnabled } from './features/settings/redux/settingsActions'
+import {
+  setAudioInputLevel,
+  setEnabled,
+} from './features/settings/redux/settingsActions'
 import { setData } from './features/settings/redux/settingsOperations'
 import ColorPaletteScreen from './screens/ColorPaletteScreen'
 import HomeScreen from './screens/HomeScreen'
@@ -57,20 +60,23 @@ function App({
   error,
   enabled,
   setEnabled,
-  currentAnimation,
-  currentPalette,
+  // currentAnimation,
+  // currentPalette,
+  setAudioInputLevel,
 }) {
   React.useEffect(() => {
     OSCManager.setClient(port, address)
     setData().then(() => {
-      if (currentAnimation) {
-        console.log('Setting current animation!')
-        OSCManager.sendMessage(currentAnimation.FULL_PATH, [])
-      }
-      if (currentPalette) {
-        console.log('Setting current palette!')
-        OSCManager.sendMessage(currentPalette.FULL_PATH, [])
-      }
+      // if (currentAnimation) {
+      //   console.log('Setting current animation!')
+      //   OSCManager.sendMessage(currentAnimation.FULL_PATH, [])
+      // }
+      // if (currentPalette) {
+      //   console.log('Setting current palette!')
+      //   OSCManager.sendMessage(currentPalette.FULL_PATH, [])
+      // }
+      console.log('Setting audio sensitivty to max!')
+      setAudioInputLevel(4)
     })
     // Hides native splash screen after 500ms
     const timeout = setTimeout(async () => {
@@ -443,6 +449,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   setData,
   setEnabled,
+  setAudioInputLevel,
 }
 
 function mapStateToProps({ settings }) {

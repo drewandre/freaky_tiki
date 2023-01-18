@@ -7,6 +7,7 @@ export function adjustColor(
   name,
   { r, g, b, a }
 ) {
+  console.log(type, r, g, b, a)
   if (medias[name]) {
     const media = medias[name]
     if (media.CONTENTS[type]) {

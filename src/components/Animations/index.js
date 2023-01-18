@@ -13,11 +13,13 @@ import OSCManager from '../../features/OSC/OSCManager'
 import {
   setCurrentAnimation,
   setParamValue,
+  setAudioInputLevel,
 } from '../../features/settings/redux/settingsActions'
 import Cue from '../Cue'
 import Slider from '../Slider'
 
 const SHOW_PLAY_OPTIONS = false
+const SHOW_PARAMS = false
 
 const isTablet = DeviceInfo.isTablet()
 
@@ -35,6 +37,8 @@ function Animations({
   currentAnimation,
   setParamValue,
   setCurrentAnimation,
+  setAudioInputLevel,
+  audioInputLevel,
 }) {
   const [orientation, setOrientation] = React.useState(0)
   const isLandscape = [1, 2].includes(orientation)
@@ -103,6 +107,9 @@ function Animations({
   function onParamSliderChangeFinish(e, address /* oscAddress */) {
     setParamValue(address, e)
   }
+  function handleAudioSensitivityChange(val) {
+    setAudioInputLevel(val)
+  }
   if (!orientation) {
     return null
   }
@@ -150,20 +157,68 @@ function Animations({
           keyExtractor={animationKeyExtractor}
           renderItem={renderAnimation}
           scrollIndicatorInsets={{
-            bottom: currentAnimation?.PARAMS?.length ? 160 : 0,
+            bottom: SHOW_PARAMS && currentAnimation?.PARAMS?.length ? 160 : 0,
           }}
-          style={{
-            position: 'absolute',
-            top: 60,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
+          style={
+            SHOW_PARAMS
+              ? {
+                  position: 'absolute',
+                  top: 60,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                }
+              : undefined
+          }
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={<View style={{ height: 100 }} />}
+          ListFooterComponent={
+            SHOW_PARAMS ? <View style={{ height: 100 }} /> : undefined
+          }
           contentContainerStyle={styles.contentContainerStyle}
         />
-        {currentAnimation?.PARAMS?.length ? (
+        <View>
+          <Text
+            style={{ margin: 15, marginBottom: 0, ...styles.sectionHeader }}
+          >
+            Audio Sentivity
+          </Text>
+          <View style={styles.audioButtons}>
+            <TouchableOpacity
+              style={styles.audioButton}
+              onPress={() => {
+                handleAudioSensitivityChange(0)
+              }}
+            >
+              <Text style={styles.audioButtonText}>Off</Text>
+              {audioInputLevel?.VALUE?.[0] === 0 ? (
+                <View style={styles.bottomBorder} />
+              ) : null}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.audioButton}
+              onPress={() => {
+                handleAudioSensitivityChange(1)
+              }}
+            >
+              <Text style={styles.audioButtonText}>Low</Text>
+              {audioInputLevel?.VALUE?.[0] === 1 ? (
+                <View style={styles.bottomBorder} />
+              ) : null}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.audioButton}
+              onPress={() => {
+                handleAudioSensitivityChange(4)
+              }}
+            >
+              <Text style={styles.audioButtonText}>High</Text>
+              {audioInputLevel?.VALUE?.[0] === 4 ? (
+                <View style={styles.bottomBorder} />
+              ) : null}
+            </TouchableOpacity>
+          </View>
+        </View>
+        {SHOW_PARAMS && currentAnimation?.PARAMS?.length ? (
           <View style={styles.animationSliderContainer}>
             <LinearGradient
               colors={['rgba(18,18,18,0)', '#121212']}
@@ -201,6 +256,38 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  bottomBorder: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 5,
+    borderBottomLeftRadius: 500,
+    borderBottomRightRadius: 500,
+    backgroundColor: '#32FCFF',
+  },
+  audioButtons: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    width: '100%',
+    padding: 20,
+  },
+  audioButton: {
+    marginRight: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fff',
+    paddingHorizontal: 40,
+    paddingVertical: 20,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  audioButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   sliderContainer: {
     backgroundColor: '#121212',
@@ -258,13 +345,17 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   setParamValue,
   setCurrentAnimation,
+  setAudioInputLevel,
 }
 
-function mapStateToProps({ settings: { port, currentAnimation, cues } }) {
+function mapStateToProps({
+  settings: { port, audioInputLevel, currentAnimation, cues },
+}) {
   return {
     cues,
     port,
     currentAnimation,
+    audioInputLevel,
   }
 }
 

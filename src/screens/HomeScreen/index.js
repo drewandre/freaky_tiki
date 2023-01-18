@@ -8,6 +8,8 @@ import { connect } from 'react-redux'
 import Animations from '../../components/Animations'
 import Palettes from '../../components/Palettes'
 
+const SHOW_PALETTES = false
+
 function HomeScreen({}) {
   const [orientation, setOrientation] = React.useState(0)
   const isLandscape = [1, 2].includes(orientation)
@@ -47,7 +49,7 @@ function HomeScreen({}) {
     >
       <StatusBar style="light" />
       <Animations />
-      <Palettes />
+      {SHOW_PALETTES ? <Palettes /> : null}
     </View>
   )
 }
