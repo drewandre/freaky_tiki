@@ -269,11 +269,11 @@ platform :ios do
     end
 
     # Generate app icons: https://github.com/KrauseFx/fastlane-plugin-appicon
-    appicon(
-      appicon_image_file: ICON_PATH,
-      appicon_devices: [:ipad, :iphone, :ios_marketing],
-      appicon_path: IOS_APP_ICON_SET_PATH
-    )
+    # appicon(
+    #   appicon_image_file: ICON_PATH,
+    #   appicon_devices: [:ipad, :iphone, :ios_marketing],
+    #   appicon_path: IOS_APP_ICON_SET_PATH
+    # )
 
     # Generate clean build output directory
     sh("rm -rf #{IOS_BUILD_OUTPUT_DIRECTORY}; mkdir -p #{IOS_BUILD_OUTPUT_DIRECTORY};")

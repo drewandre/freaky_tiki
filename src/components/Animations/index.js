@@ -211,7 +211,7 @@ function Animations({
                 handleAudioSensitivityChange(4)
               }}
             >
-              <Text style={styles.audioButtonText}>High</Text>
+              <Text style={styles.audioButtonText}>Normal</Text>
               {audioInputLevel?.VALUE?.[0] === 4 ? (
                 <View style={styles.bottomBorder} />
               ) : null}

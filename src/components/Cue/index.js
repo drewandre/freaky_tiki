@@ -130,24 +130,45 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
   })
 
   const thumbnail = React.useMemo(() => {
-    if (id.includes('sparkle')) {
+    if (id.includes('preshow_static')) {
       return (
         <Image
-          source={require('../../assets/sparkle_thumbnail.png')}
+          source={require('../../assets/preshow_static.png')}
           style={styles.imageBackground}
         />
       )
-    } else if (id.includes('noise')) {
+    } else if (id.includes('preshow_color')) {
       return (
         <Image
-          source={require('../../assets/noise_thumbnail.png')}
+          source={require('../../assets/preshow_color.png')}
           style={styles.imageBackground}
         />
       )
-    } else if (id.includes('preshow')) {
+    } else if (id.includes('last_call')) {
       return (
         <Image
-          source={require('../../assets/solid_thumbnail.png')}
+          source={require('../../assets/last_call.png')}
+          style={styles.imageBackground}
+        />
+      )
+    } else if (id.includes('slow_or_jazz')) {
+      return (
+        <Image
+          source={require('../../assets/slow_or_jazz.png')}
+          style={styles.imageBackground}
+        />
+      )
+    } else if (id.includes('rock')) {
+      return (
+        <Image
+          source={require('../../assets/rock.png')}
+          style={styles.imageBackground}
+        />
+      )
+    } else if (id.includes('dance')) {
+      return (
+        <Image
+          source={require('../../assets/dance.png')}
           style={styles.imageBackground}
         />
       )
@@ -161,6 +182,13 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
     }
   }, [id])
 
+  const textStyles = React.useMemo(() => {
+    return {
+      ...styles.text,
+      color: id.includes('last_call') ? '#000' : '#fff',
+    }
+  }, [id])
+
   return (
     <TapGestureHandler
       enabled={!!data?.FULL_PATH}
@@ -171,14 +199,7 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
     >
       <Animated.View style={animatedStyles}>
         {data?.FULL_PATH ? thumbnail : <View style={styles.imageBackground} />}
-        <Text
-          style={{
-            ...styles.text,
-            color: id.includes('preshow') ? '#000' : '#fff',
-          }}
-        >
-          {data.DESCRIPTION}
-        </Text>
+        <Text style={textStyles}>{data.DESCRIPTION}</Text>
         <Animated.View style={animatedCueTimingStyles} />
         {data?.FULL_PATH ? (
           <Animated.View style={animatedBottomBorderStyles} />
@@ -191,7 +212,6 @@ function Cue({ setCurrentAnimation, currentAnimation, data }) {
 const styles = StyleSheet.create({
   text: {
     fontWeight: 'bold',
-    color: '#fff',
     fontSize: 16,
     position: 'absolute',
   },

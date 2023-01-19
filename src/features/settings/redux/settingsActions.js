@@ -115,7 +115,7 @@ export function setDataSuccess(data = {}) {
         CONTENTS: {
           main: {
             CONTENTS: {
-              scenes: {
+              cues: {
                 CONTENTS: {
                   by_name: {
                     CONTENTS: cues,
