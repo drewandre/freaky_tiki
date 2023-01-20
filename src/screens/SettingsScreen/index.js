@@ -101,7 +101,9 @@ function SettingsScreen({
     <View style={styles.viewWrapper}>
       <ScollViewWrapper style={styles.scrollView}>
         <View style={{ flex: 1 }}>
-          <View style={styles.slidersWrapper}>{renderSliders()}</View>
+          {!loading && !error ? (
+            <View style={styles.slidersWrapper}>{renderSliders()}</View>
+          ) : null}
           <TouchableOpacity
             onPress={setData}
             disabled={loading}

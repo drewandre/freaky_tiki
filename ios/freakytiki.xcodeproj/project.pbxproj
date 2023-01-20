@@ -327,7 +327,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				ENABLE_BITCODE = NO;
@@ -372,7 +372,7 @@
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				INFOPLIST_FILE = freakytiki/Info.plist;

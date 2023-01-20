@@ -17,7 +17,7 @@ import {
 
 const INITIAL_STATE = {
   port: '8010',
-  address: '10.0.208.87',
+  address: '10.0.207.21',
   loading: false,
   error: null,
   cues: [],
