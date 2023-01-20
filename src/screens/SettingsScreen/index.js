@@ -19,6 +19,7 @@ import OSCManager from '../../features/OSC/OSCManager'
 import {
   changePort,
   changeAddress,
+  setAudioInputLevel,
 } from '../../features/settings/redux/settingsActions'
 import { setData } from '../../features/settings/redux/settingsOperations'
 
@@ -32,8 +33,11 @@ function SettingsScreen({
   address,
   masterLevel,
   loading,
+  error,
+  audioInputLevel,
   changePort,
   changeAddress,
+  setAudioInputLevel,
 }) {
   const localAddressRef = React.useRef(address)
   const localPortRef = React.useRef(port)
@@ -89,6 +93,10 @@ function SettingsScreen({
     )
   }
 
+  function handleAudioSensitivityChange(val) {
+    setAudioInputLevel(val)
+  }
+
   return (
     <View style={styles.viewWrapper}>
       <ScollViewWrapper style={styles.scrollView}>
@@ -116,6 +124,54 @@ function SettingsScreen({
               </Text>
             )}
           </TouchableOpacity>
+          {isTablet || loading || error ? null : (
+            <View>
+              <Text
+                style={{
+                  marginVertical: 15,
+                  marginBottom: 0,
+                  ...styles.sectionHeader,
+                }}
+              >
+                Audio Sensitivty
+              </Text>
+              <View style={styles.audioButtons}>
+                <TouchableOpacity
+                  style={styles.audioButton}
+                  onPress={() => {
+                    handleAudioSensitivityChange(0)
+                  }}
+                >
+                  <Text style={styles.audioButtonText}>Off</Text>
+                  {audioInputLevel?.VALUE?.[0] === 0 ? (
+                    <View style={styles.bottomBorder} />
+                  ) : null}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.audioButton}
+                  onPress={() => {
+                    handleAudioSensitivityChange(1)
+                  }}
+                >
+                  <Text style={styles.audioButtonText}>Low</Text>
+                  {audioInputLevel?.VALUE?.[0] === 1 ? (
+                    <View style={styles.bottomBorder} />
+                  ) : null}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.audioButton}
+                  onPress={() => {
+                    handleAudioSensitivityChange(4)
+                  }}
+                >
+                  <Text style={styles.audioButtonText}>Normal</Text>
+                  {audioInputLevel?.VALUE?.[0] === 4 ? (
+                    <View style={styles.bottomBorder} />
+                  ) : null}
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
         <View style={styles.textInputsContainer}>
           <Text style={styles.warningLabel}>
@@ -206,11 +262,50 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#ff6700',
   },
+  bottomBorder: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 5,
+    borderBottomLeftRadius: 500,
+    borderBottomRightRadius: 500,
+    backgroundColor: '#32FCFF',
+  },
+  sectionHeader: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  audioButtons: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    width: '100%',
+    paddingVertical: 20,
+  },
+  audioButton: {
+    marginRight: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fff',
+    // paddingHorizontal: 40,
+    paddingVertical: 10,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  audioButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 })
 
 function mapStateToProps({ settings }) {
   return {
     port: settings?.port,
+    error: settings?.error,
     loading: settings?.loading,
     masterLevel: settings?.masterLevel,
     audioInputLevel: settings?.audioInputLevel,
@@ -222,6 +317,7 @@ const mapDispatchToProps = {
   changePort,
   changeAddress,
   setData,
+  setAudioInputLevel,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen)

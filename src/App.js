@@ -37,6 +37,8 @@ import ColorPaletteScreen from './screens/ColorPaletteScreen'
 import HomeScreen from './screens/HomeScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
+const SHOW_COLOR_PALETTES = false
+
 const navigationRef = createNavigationContainerRef()
 
 const RootStack = createNativeStackNavigator()
@@ -295,27 +297,29 @@ function App({
                         }
                       }}
                     />
-                    <Footer.Screen
-                      name="Color Palettes"
-                      component={Palettes}
-                      options={({ navigation }) => {
-                        return {
-                          ...defaultHomeScreenOptions(navigation),
-                          tabBarIcon: ({ focused }) => {
-                            return (
-                              <Image
-                                source={require('./assets/palette.png')}
-                                style={{
-                                  opacity: focused ? 1 : 0.4,
-                                  width: 26,
-                                  height: 26,
-                                }}
-                              />
-                            )
-                          },
-                        }
-                      }}
-                    />
+                    {SHOW_COLOR_PALETTES ? (
+                      <Footer.Screen
+                        name="Color Palettes"
+                        component={Palettes}
+                        options={({ navigation }) => {
+                          return {
+                            ...defaultHomeScreenOptions(navigation),
+                            tabBarIcon: ({ focused }) => {
+                              return (
+                                <Image
+                                  source={require('./assets/palette.png')}
+                                  style={{
+                                    opacity: focused ? 1 : 0.4,
+                                    width: 26,
+                                    height: 26,
+                                  }}
+                                />
+                              )
+                            },
+                          }
+                        }}
+                      />
+                    ) : null}
                   </Footer.Navigator>
                 )
               }}

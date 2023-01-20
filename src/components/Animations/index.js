@@ -39,6 +39,8 @@ function Animations({
   setCurrentAnimation,
   setAudioInputLevel,
   audioInputLevel,
+  loading,
+  error,
 }) {
   const [orientation, setOrientation] = React.useState(0)
   const isLandscape = [1, 2].includes(orientation)
@@ -176,48 +178,50 @@ function Animations({
           }
           contentContainerStyle={styles.contentContainerStyle}
         />
-        <View>
-          <Text
-            style={{ margin: 15, marginBottom: 0, ...styles.sectionHeader }}
-          >
-            Audio Sentivity
-          </Text>
-          <View style={styles.audioButtons}>
-            <TouchableOpacity
-              style={styles.audioButton}
-              onPress={() => {
-                handleAudioSensitivityChange(0)
-              }}
+        {isTablet && !loading && !error ? (
+          <View>
+            <Text
+              style={{ margin: 15, marginBottom: 0, ...styles.sectionHeader }}
             >
-              <Text style={styles.audioButtonText}>Off</Text>
-              {audioInputLevel?.VALUE?.[0] === 0 ? (
-                <View style={styles.bottomBorder} />
-              ) : null}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.audioButton}
-              onPress={() => {
-                handleAudioSensitivityChange(1)
-              }}
-            >
-              <Text style={styles.audioButtonText}>Low</Text>
-              {audioInputLevel?.VALUE?.[0] === 1 ? (
-                <View style={styles.bottomBorder} />
-              ) : null}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.audioButton}
-              onPress={() => {
-                handleAudioSensitivityChange(4)
-              }}
-            >
-              <Text style={styles.audioButtonText}>Normal</Text>
-              {audioInputLevel?.VALUE?.[0] === 4 ? (
-                <View style={styles.bottomBorder} />
-              ) : null}
-            </TouchableOpacity>
+              Audio Sensitivty
+            </Text>
+            <View style={styles.audioButtons}>
+              <TouchableOpacity
+                style={styles.audioButton}
+                onPress={() => {
+                  handleAudioSensitivityChange(0)
+                }}
+              >
+                <Text style={styles.audioButtonText}>Off</Text>
+                {audioInputLevel?.VALUE?.[0] === 0 ? (
+                  <View style={styles.bottomBorder} />
+                ) : null}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.audioButton}
+                onPress={() => {
+                  handleAudioSensitivityChange(1)
+                }}
+              >
+                <Text style={styles.audioButtonText}>Low</Text>
+                {audioInputLevel?.VALUE?.[0] === 1 ? (
+                  <View style={styles.bottomBorder} />
+                ) : null}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.audioButton}
+                onPress={() => {
+                  handleAudioSensitivityChange(4)
+                }}
+              >
+                <Text style={styles.audioButtonText}>Normal</Text>
+                {audioInputLevel?.VALUE?.[0] === 4 ? (
+                  <View style={styles.bottomBorder} />
+                ) : null}
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        ) : null}
         {SHOW_PARAMS && currentAnimation?.PARAMS?.length ? (
           <View style={styles.animationSliderContainer}>
             <LinearGradient
@@ -349,11 +353,13 @@ const mapDispatchToProps = {
 }
 
 function mapStateToProps({
-  settings: { port, audioInputLevel, currentAnimation, cues },
+  settings: { port, error, loading, audioInputLevel, currentAnimation, cues },
 }) {
   return {
     cues,
     port,
+    error,
+    loading,
     currentAnimation,
     audioInputLevel,
   }

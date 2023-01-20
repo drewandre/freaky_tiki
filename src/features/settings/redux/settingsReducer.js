@@ -42,7 +42,13 @@ export default produce((draft, action) => {
       return draft
     case SET_ENABLED:
       draft.enabled = action.payload
-      draft.masterLevel.VALUE = action.payload ? [1] : [0]
+      if (draft.masterLevel) {
+        draft.masterLevel.VALUE = action.payload ? [1] : [0]
+      } else {
+        draft.masterLevel = {
+          VALUE: action.payload ? [1] : [0],
+        }
+      }
       return draft
     case ADD_COLOR_PALETTE:
       draft.palettes.push(action.payload)
@@ -58,7 +64,13 @@ export default produce((draft, action) => {
       }
       return draft
     case SET_AUDIO_INPUT_LEVEL:
-      draft.audioInputLevel.VALUE = [action.payload]
+      if (draft.audioInputLevel) {
+        draft.audioInputLevel.VALUE = [action.payload]
+      } else {
+        draft.audioInputLevel = {
+          VALUE: [action.payload],
+        }
+      }
       return draft
     case SET_DATA_BEGIN:
       draft.loading = true
@@ -72,6 +84,7 @@ export default produce((draft, action) => {
       draft.medias = action.payload.medias
       draft.audioInputLevel = action.payload.audio_input_level
       draft.masterLevel = action.payload.master_level
+      draft.enabled = action.payload.master_level !== 0
       draft.loading = false
       return draft
     case SET_DATA_ERROR:
