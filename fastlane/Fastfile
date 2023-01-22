@@ -323,7 +323,7 @@ platform :ios do
       reject_build_waiting_for_review: true,
       skip_waiting_for_build_processing: options[:target] != 'prod',
       distribute_external: options[:target] == 'prod',
-      changelog: "Updated Freaky Tiki build",
+      changelog: "Updated Friki Tiki build",
       groups: groups,
       ipa: "#{IOS_BUILD_OUTPUT_DIRECTORY}/#{returniOSOutputNameForTargetEnv(options[:target], 'Release')}.ipa"
     )

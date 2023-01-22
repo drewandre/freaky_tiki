@@ -8,6 +8,8 @@
 
 #import <React/RCTAppSetupUtils.h>
 
+#import "ReactNativeExceptionHandler.h"
+
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -56,6 +58,39 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [self.window makeKeyAndVisible];
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
+
+[ReactNativeExceptionHandler replaceNativeExceptionHandlerBlock:^(NSException *exception, NSString *readeableException){
+
+    // THE CODE YOU WRITE HERE WILL REPLACE THE EXISTING NATIVE POPUP THAT COMES WITH THIS MODULE.
+    //We create an alert box
+    UIAlertController* alert = [UIAlertController
+                                alertControllerWithTitle:@"Something went wrong"
+                                message: [NSString stringWithFormat:@"%@\n%@",
+                                          @"Please take a screenshot of this error message and text it to Drew @ 978-495-2066.\n",
+                                          readeableException]
+                                preferredStyle:UIAlertControllerStyleAlert];
+
+    // We show the alert box using the rootViewController
+    [rootViewController presentViewController:alert animated:YES completion:nil];
+
+    // THIS IS THE IMPORTANT PART
+    // By default when an exception is raised we will show an alert box as per our code.
+    // But since our buttons wont work because our click handlers wont work.
+    // to close the app or to remove the UI lockup on exception.
+    // we need to call this method
+    // [ReactNativeExceptionHandler releaseExceptionHold]; // to release the lock and let the app crash.
+
+    // Hence we set a timer of 4 secs and then call the method releaseExceptionHold to quit the app after
+    // 4 secs of showing the popup
+    [NSTimer scheduledTimerWithTimeInterval:10.0
+                                     target:[ReactNativeExceptionHandler class]
+                                   selector:@selector(releaseExceptionHold)
+                                   userInfo:nil
+                                    repeats:NO];
+
+    // or  you can call
+    // [ReactNativeExceptionHandler releaseExceptionHold]; when you are done to release the UI lock.
+  }];
 
   return YES;
 }
