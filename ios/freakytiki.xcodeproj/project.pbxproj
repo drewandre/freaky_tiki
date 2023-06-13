@@ -271,7 +271,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-freakytiki/Pods-freakytiki-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/hermes.framework/hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -327,7 +327,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				ENABLE_BITCODE = NO;
@@ -349,7 +349,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "00a72082-a710-4af5-9c80-ed6eb1c5cf3e";
+				PROVISIONING_PROFILE = "bf585928-6626-4f8a-8146-b90ac26fcbf3";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiDevelopment;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiDevelopment;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -372,7 +372,7 @@
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				INFOPLIST_FILE = freakytiki/Info.plist;
@@ -389,7 +389,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "a2bdda81-5755-4cdb-9055-93c10832292e";
+				PROVISIONING_PROFILE = "a132f760-03fd-437b-9400-447b244edb08";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiRelease;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiAdhoc;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -449,9 +449,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
-				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
+				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
@@ -500,9 +500,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
-				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
+				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
