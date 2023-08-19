@@ -7,7 +7,8 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build": "fastlane ios build target:dev && fastlane ios deploy target:dev"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.10",

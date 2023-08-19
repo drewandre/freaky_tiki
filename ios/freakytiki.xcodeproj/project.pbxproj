@@ -327,7 +327,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				ENABLE_BITCODE = NO;
@@ -349,7 +349,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "bf585928-6626-4f8a-8146-b90ac26fcbf3";
+				PROVISIONING_PROFILE = "976bc6c6-a5c7-4967-bcee-34f922c1798d";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiDevelopment;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiDevelopment;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -372,7 +372,7 @@
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				INFOPLIST_FILE = freakytiki/Info.plist;
@@ -389,7 +389,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "a132f760-03fd-437b-9400-447b244edb08";
+				PROVISIONING_PROFILE = "f28e59df-9c44-46f8-8bec-5872dc0fb7e7";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiRelease;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiAdhoc;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

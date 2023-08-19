@@ -28,7 +28,7 @@ PRIMARY_TARGET = 'freakytiki'
 
 BUILD_NUMBER_INCREMENT = 1
 
-FORCE_MATCH = false
+FORCE_MATCH = true
 
 # Google::Apis.logger.level = Logger::DEBUG
 # ENV["VERBOSE"] = "true"
