@@ -15,13 +15,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios nuke
+
+```sh
+[bundle exec] fastlane ios nuke
+```
+
+New build for iOS App Store
+
 ### ios register_account_devices
 
 ```sh
 [bundle exec] fastlane ios register_account_devices
 ```
 
-New build for iOS App Store
+
 
 ### ios config
 

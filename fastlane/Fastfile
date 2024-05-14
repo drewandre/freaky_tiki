@@ -37,7 +37,7 @@ platform :ios do
   desc 'New build for iOS App Store'
   
   before_all do |lane, options|
-    if (!["dev", "dev2", "staging", "prod"].include?(options[:target]))
+    if (!["dev", "dev2", "staging", "prod"].include?(options[:target]) && lane != nuke)
       UI.user_error!('You must supply a valid target environment when running fastlane ("dev", "dev2", "staging", or "prod"). Example: fastlane ios build target:dev')
     end
 
@@ -59,6 +59,31 @@ platform :ios do
           UI.success('Loaded .env.production')
       end
     end
+  end
+
+  lane :nuke do |options|
+    app_store_connect_api_key(
+      key_id: "#{ENV["APPSTORE_CONNECT_API_KEY_ID"]}",
+      issuer_id: "#{ENV["APPSTORE_CONNECT_API_ISSUER_ID"]}",
+      key_filepath: APPSTORE_CONNECT_API_KEY_PATH,
+      in_house: false,
+    )
+
+    match_nuke(
+      type: "development",
+      api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+      username: 'dandre94@icloud.com',
+      git_url: "#{ENV["MATCH_GIT_URL"]}",
+      skip_confirmation: true
+    )
+
+    match_nuke(
+      type: "appstore",
+      api_key_path: APPSTORE_CONNECT_API_KEY_PATH,
+      username: 'dandre94@icloud.com',
+      git_url: "#{ENV["MATCH_GIT_URL"]}",
+      skip_confirmation: true
+    )
   end
 
   lane :register_account_devices do |options|
@@ -138,7 +163,7 @@ platform :ios do
       type: "appstore",
       readonly: is_ci?,
       output_path: IOS_BUILD_OUTPUT_DIRECTORY,
-      generate_apple_certs: true,
+      # generate_apple_certs: true,
       profile_name: returniOSOutputNameForTargetEnv(options[:target], 'Release'),
       app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
       git_url: "#{ENV["MATCH_GIT_URL"]}"
@@ -151,7 +176,7 @@ platform :ios do
       type: "adhoc",
       readonly: is_ci?,
       output_path: IOS_BUILD_OUTPUT_DIRECTORY,
-      generate_apple_certs: true,
+      # generate_apple_certs: true,
       profile_name: returniOSOutputNameForTargetEnv(options[:target], 'Adhoc'),
       app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
       git_url: "#{ENV["MATCH_GIT_URL"]}"
@@ -164,7 +189,7 @@ platform :ios do
       type: "development",
       readonly: is_ci?,
       output_path: IOS_BUILD_OUTPUT_DIRECTORY,
-      generate_apple_certs: true,
+      # generate_apple_certs: true,
       profile_name: returniOSOutputNameForTargetEnv(options[:target], 'Development'),
       app_identifier: "#{ENV["FASTLANE_APP_IDENTIFIER"]}",
       git_url: "#{ENV["MATCH_GIT_URL"]}"

@@ -172,7 +172,6 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = ULR6Y55H26;
 						LastSwiftMigration = 1250;
-						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -326,14 +325,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
 				);
 				INFOPLIST_FILE = freakytiki/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Tiki;
@@ -349,7 +348,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "976bc6c6-a5c7-4967-bcee-34f922c1798d";
+				PROVISIONING_PROFILE = "523f6685-8f5f-4ca1-8bae-78a77af6e5d4";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiDevelopment;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiDevelopment;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -371,10 +370,15 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = freakytiki/freakytiki.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = ULR6Y55H26;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ULR6Y55H26;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"HERMES_ENABLE_DEBUGGER=1",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
 				INFOPLIST_FILE = freakytiki/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Tiki;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -389,9 +393,9 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.freaky-tiki-dev";
 				PRODUCT_NAME = freakytiki;
-				PROVISIONING_PROFILE = "f28e59df-9c44-46f8-8bec-5872dc0fb7e7";
+				PROVISIONING_PROFILE = "6e8e9812-059f-4a36-a976-1def91d6bed1";
 				PROVISIONING_PROFILE_SPECIFIER = freakytikiRelease;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiAdhoc;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = freakytikiRelease;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -440,6 +444,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -494,6 +499,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
